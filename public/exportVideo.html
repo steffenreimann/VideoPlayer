@@ -1,0 +1,183 @@
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+
+    <title>Video Player</title>
+    <!-- MDB icon -->
+    <link rel="icon" href="img/mdb-favicon.ico" type="image/x-icon" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" />
+    <!-- Google Fonts Roboto -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
+    <!-- MDB -->
+    <link rel="stylesheet" href="css/mdb.min.css" />
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/multirange.css" />
+</head>
+
+<body onload="window.init()">
+    <div id="body">
+
+        <div id="mySidenav" class="sidenav">
+
+            <div class="row" style="padding: 10px;">
+                <div class="col" onclick="window.clearPlaylist()">
+                    <div class="sidenavItemItem ">Clear Playlist </div>
+                </div>
+
+                <div class="col sidenavItemItem d-flex justify-content-end fa-2x" onclick="window.closeNav()">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+
+
+            <div id="playlist">
+
+            </div>
+
+        </div>
+
+
+        <div id="video-container">
+
+
+            <div id="video-titel" class="video-titel">
+                <div class="col-1 sidenavItemItem nav-item" onclick="window.openNav()"><i class="fas fa-bars fa-2x"></i>
+                </div>
+                <p id="video-titel-name">Test Titel der sehr sehr sehr sher lang ist es geht aber noch viel länger lol
+                </p>
+
+            </div>
+            <!-- Video -->
+            <video class="video-player-export " id="videoplayer" onended="window.onVideoEnded()" autoplay controls
+                src="">
+
+            </video>
+            <!-- Video Controls -->
+            <div id="controls" class="video-controls">
+
+                <div class="" style="position: relativ;">
+                    <div>
+                        <div style="left: 30px;" class="item">
+                            <p id="currentTime">0</p>
+                        </div>
+                        <div style="right: 50px; left: 50px; top: 4px;" class="item">
+                            <input style="position: static;" class="col-12" id="time" type="range" min="0" max="1000"
+                                value="0">
+                        </div>
+                        <div style="right: 0px;" class="item">
+                            <p id="duration">0</p>
+                        </div>
+                    </div>
+
+                    <div style="position: absolute; top: 20px; left: 50%;width: 120px;height: 50px;  transform: translate(-50%, 0%);"
+                        class="">
+                        <div style="left: 0px;" class="item" onclick="window.previous()"><i
+                                class="fas fa-backward fa-2x"></i>
+                        </div>
+                        <div style="left: 40px;" class="item" onclick="window.togglePlay()"><i id="PlayPauseBTN"
+                                class="fas fa-play fa-2x"></i>
+                        </div>
+                        <div style="left: 80px;" class="item" onclick="window.next()"><i
+                                class="fas fa-forward fa-2x"></i>
+                        </div>
+                    </div>
+
+
+                    <div style="position: absolute; top: 27px; right: 50px;" class="">
+                        <input id="volume" onchange="window.changeVolume(this)" type="range" min="0" max="100"
+                            value="100">
+                    </div>
+                    <div style="position: absolute; top: 20px; left: 30px;" class="">
+
+
+                        <div style="left: 0px;" class="item">
+                            <div class="" onclick="window.LowerSpeed()">
+                                <i class="fas fa-angle-down fa-2x"></i>
+                            </div>
+                        </div>
+                        <div style="left: 40px;" class="item">
+                            <p id="currentSpeed">1</p>
+                        </div>
+                        <div style="left: 80px;" class="item">
+                            <div class=" " onclick="window.HigherSpeed()">
+                                <i class="fas fa-angle-up fa-2x"></i>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div style="position: absolute; top: 27px; right: 10px;" class=""
+                        onclick="window.toggleFullscreen()">
+                        <i class="fas fa-expand"></i>
+                    </div>
+
+                    <div style="position: absolute; top: 27px; right: 205px;" class="" onclick="window.saveFrame()">
+                        <i class="fas fa-camera"></i>
+                    </div>
+
+                    <div style="position: absolute; top: 27px; right: 243px;" class="" onclick="window.exportVideo()">
+                        <i class="fas fa-file-video"></i>
+                    </div>
+
+
+
+                    <div slider
+                        style="position: absolute; top: 27px; right: 350px; width: 400px;height: 20px; z-index: 999;"
+                        id="slider-distance">
+                        <div>
+                            <div inverse-left style="width:70%;"></div>
+                            <div inverse-right style="width:70%;"></div>
+                            <div range style="left:30%;right:40%;"></div>
+                            <span thumb style="left:30%;"></span>
+                            <span thumb style="left:60%;"></span>
+                            <div sign style="left:30%;">
+                                <span id="value">30</span>
+                            </div>
+                            <div sign style="left:60%;">
+                                <span id="value">60</span>
+                            </div>
+                        </div>
+                        <input type="range" tabindex="0" value="30" max="1000" min="0" step="1" oninput="
+                        this.value=Math.min(this.value,this.parentNode.childNodes[5].value-1);
+                        var value=(100/(parseInt(this.max)-parseInt(this.min)))*parseInt(this.value)-(100/(parseInt(this.max)-parseInt(this.min)))*parseInt(this.min);
+                        var children = this.parentNode.childNodes[1].childNodes;
+                        children[1].style.width=value+'%';
+                        children[5].style.left=value+'%';
+                        children[7].style.left=value+'%';children[11].style.left=value+'%';
+                        children[11].childNodes[1].innerHTML=this.value;" />
+
+                        <input type="range" tabindex="0" value="600" max="1000" min="0" step="1" oninput="
+                        this.value=Math.max(this.value,this.parentNode.childNodes[3].value-(-1));
+                        var value=(100/(parseInt(this.max)-parseInt(this.min)))*parseInt(this.value)-(100/(parseInt(this.max)-parseInt(this.min)))*parseInt(this.min);
+                        var children = this.parentNode.childNodes[1].childNodes;
+                        children[3].style.width=(100-value)+'%';
+                        children[5].style.right=(100-value)+'%';
+                        children[9].style.left=value+'%';children[13].style.left=value+'%';
+                        children[13].childNodes[1].innerHTML=this.value;" />
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div onclick="window.clickOverlay()" class="video-overlay">
+
+        </div>
+    </div>
+
+
+
+
+</body>
+<!-- MDB -->
+<script type="text/javascript" src="js/mdb.min.js"></script>
+<script type="text/javascript" src="js/main.js"></script>
+<script>
+
+</script>
+
+</html>

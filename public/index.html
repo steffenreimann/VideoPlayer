@@ -1,14 +1,321 @@
 <html>
 
 <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>Video Player</title>
+    <!-- MDB icon -->
+    <link rel="icon" href="img/mdb-favicon.ico" type="image/x-icon" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" />
+    <!-- Google Fonts Roboto -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
+    <!-- MDB -->
+
+
+    <link rel="stylesheet" href="css/custom/dist/main.css" />
+
+
+    <link rel="stylesheet" href="E:\html-framework\hb-front\main\dist\main.css" />
+
 
 </head>
 
 <body>
-    <div style="position: relative; top: 50%; text-align: center;font-size: xxx-large;font-family: system-ui;  -ms-transform: translateY(-50%); transform: translateY(-50%);">
-        Welcome, the electron app is running!
-        <div style="font-size: xx-large" id="testFuncCall">Press CTRL+S or TestFunctionCall in Edit Menu</div>
+    <div id="body">
+        <div id="FullscreenContainer">
+            <div id="mySidenav" class="sidenav">
+
+                <div id="sidenavResizer" class="resizer"></div>
+                <!--
+ <div class="row" style="padding: 10px;">
+                    <div class="col" onclick="window.clearPlaylist()">
+                        <div class="sidenavItemItem ">Clear Playlist </div>
+                    </div>
+
+                    <div class="col sidenavItemItem d-flex justify-content-end fa-2x" onclick="window.closeNav()">
+                        <i class="fas fa-times"></i>
+                    </div>
+                </div>
+
+                -->
+
+
+
+                <div class="playlist" id="playlist">
+
+                </div>
+                <div class="import but" onclick="window.openFiles()">
+                    Import
+                </div>
+            </div>
+
+
+            <div id="video-container">
+
+
+                <div id="video-titel" class="video-titel ">
+                    <div style="left: 11px;" class=" center-v lockLeft" onclick="window.toggleNav()"><i class="fas fa-bars fa-2x pointer"></i>
+                    </div>
+                    <p onclick="window.openFileInBrowserAndHighlight()" class="pointer" id="video-titel-name">
+                    </p>
+
+                </div>
+
+                <!-- Video -->
+                <video class="video-player" id="videoplayer" onended="window.onVideoEnded()" src="">
+
+                </video>
+
+                <!-- Video Controls -->
+                <div id="controls" class="video-controls">
+                    <div class="" style="position: relativ;">
+
+                        <!-- Wave -->
+                        <div style="position: relative;right: 0px; left: 0px; top: -0px;" class="item">
+
+                            <div id="wave-timeline"></div>
+                            <div style="width: 100%;" id="waveform"></div>
+                            <!-- <div id="slider"></div>  -->
+                        </div>
+
+                        <div class="ctrlRow center-h">
+
+
+                            <!-- Control Buttons -->
+                            <div class="ctrlPlayBut ">
+
+                                <div class="ctrlbut lockLeft center-v" onclick="window.previous()"><i class="fas fa-backward fa-2x"></i>
+                                </div>
+                                <div class="ctrlbut center" onclick="window.togglePlay()"><i id="PlayPauseBTN" class="fas fa-play fa-2x"></i>
+                                </div>
+                                <div class="ctrlbut lockRight center-v" onclick="window.next()"><i class="fas fa-forward fa-2x"></i>
+                                </div>
+
+                            </div>
+
+                            <!-- Volume -->
+                            <div class="ctrlVol">
+                                <input class="center-v" id="volume" onchange="window.changeVolume(this)" type="range" min="0" max="100" value="100">
+                            </div>
+
+
+                            <!-- Speed Control -->
+                            <div class="ctrlSpeed">
+                                <div class="ctrlbut lockLeft center-v">
+                                    <div class="" onclick="window.LowerSpeed()">
+                                        <i class="fas fa-angle-down fa-2x"></i>
+                                    </div>
+                                </div>
+                                <p class="center" id="currentSpeed">1</p>
+                                <div class="ctrlbut lockRight center-v">
+                                    <div class=" " onclick="window.HigherSpeed()">
+                                        <i class="fas fa-angle-up fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Toggle Fillscreen -->
+                            <div class="ctrlbut center-v" style="right: 11px;" onclick="window.toggleFullscreen('FullscreenContainer')">
+                                <span aria-label="Toggle Fullscreen" class="fas fa-expand"></spam>
+                            </div>
+
+
+                            <!-- Setting / Export / Frame Export -->
+                            <div class="ctrlExports">
+
+                                <div class="ctrlbut lockLeft center-v" onclick="window.saveFrame()">
+
+                                    <span aria-label="Save Frame as PNG" class="fas fa-camera "> </span>
+
+                                </div>
+
+                                <div class="ctrlbut center" onclick="window.openModal('exportModal',window.exportModalFunction)">
+                                    <span aria-label="Export" class="fas fa-file-video"></span>
+                                </div>
+
+                                <div class="ctrlbut lockRight center-v" onclick="window.openModal('settingsModal',window.SettingsModalFunction)">
+                                    <span aria-label="Settings" class="fas fa-cogs"></span>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <div onclick="window.clickOverlay()" ondblclick="window.dbClickOverlay()" class="video-overlay">
+                <div id="loadingContainer" class="center loadingContainer hidden">
+                    <div id="globalSpinner" class="spin"></div>
+                    <div id="loadingText" class=" spinnerText">
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- The Modal -->
+            <div id="exportModal" class="modal ">
+                <div class="modal-content">
+                    <div class="modal-header row">
+
+                        <button class="tablink" onclick="openPage('Export', this, 'red')">Export</button>
+
+                        <button type="button" onclick="window.closeModal('exportModal')" class="tablink"></button>
+                    </div>
+                    <div class="container">
+
+
+
+
+
+
+                        <div class="row">
+                            <div class="ig c12">
+                                <div class="input c6 ">
+                                    <input type="text" id="videoexportdirpathInputField" onclick="window.changeExportPath()" class="ig-item transparent" />
+                                </div>
+                                <div class="input c6 ">
+                                    <input type="text" id="videoexportnameInputField" class="ig-item transparent" />
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row ">
+                            <div class="ig c12">
+
+                                <div class="input c2">
+                                    <label class="label-top">Bitrate kBit/s</label>
+                                    <input type="text" id="videoexport-bitrate" class="ig-item transparent" />
+                                </div>
+                                <div class="input c2">
+                                    <label class="label-top">Quality</label>
+                                    <input type="text" id="videoexport-quality" class="ig-item transparent" value="100" />
+                                </div>
+                                <div class="input c2">
+                                    <label class="label-top">Frams per Secound</label>
+                                    <input type="text" id="videoexport-fps" class="ig-item transparent" />
+                                </div>
+                                <div class="input c3">
+                                    <div class="select ig-item transparent">
+                                        <select id="videoexport-format" class="">
+                                            <option value="mp4">mp4</option>
+                                            <option value="mov">mov</option>
+                                            <option value="avi">avi</option>
+                                            <option value="flv">flv</option>
+                                            <option value="mp3">mp3 Audio Only</option>
+                                            <option value="wav">wav Audio Only</option>
+                                            <option value="gif">gif</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="input c3 ">
+                                    <button type="button" class="ig-item transparent" onclick="window.exportVideo()">
+                                        Add to Export List
+                                    </button>
+                                </div>
+                            </div>
+
+
+
+
+                        </div>
+
+
+
+                        <div id="regions">
+
+                        </div>
+
+                        <div></div>
+                        <div id="currentExportProcesses">
+
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+
+                        <div class="crow lock-end">
+                            <div class="c7">
+                                <p id="exportText"></p>
+                            </div>
+
+                            <div class="ig c5 ">
+                                <div class="input c2 ">
+                                    <div class="ig-item">
+                                        <label class="label-top">Video</label>
+                                        <input type="checkbox" id="exportVideoCeckbox" class="">
+                                    </div>
+
+                                </div>
+                                <div class="input c2 ">
+                                    <div class="ig-item">
+                                        <label class="label-top">Clips</label>
+                                        <input type="checkbox" id="exportClipsCeckbox" class="">
+                                    </div>
+                                </div>
+                                <div class="input c8 ">
+                                    <button type="button" id="exportbtn" onclick="window.startExport()" class="ig-item" disabled="true">Export nothing</button>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+
+                    </div>
+
+                    <div id="videoExport" class="progress " value="0">
+
+                    </div>
+                </div>
+            </div>
+            <div id="settingsModal" class="modal ">
+                <div class="modal-content">
+                    <div class="modal-header">
+
+
+                        <button class="tablink" onclick="openPage('Settings', this, 'red')">Settings</button>
+                        <button type="button" onclick="window.closeModal('settingsModal')" class="btn-close" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <h3>Settings</h3>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">
+                            Close
+                        </button>
+                        <button type="button" onclick="window.exportVideo()" class="btn btn-primary">Export All</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </body>
+
+
+<script type="text/javascript" src="js/main.js"></script>
+<script type="text/javascript" src="E:\html-framework\hb-front\main\main.js"></script>
+<script type="text/javascript" src="js/modal.js"></script>
+
+
+<script src="js/wavesurfer/dist/wavesurfer.js"></script>
+
+<script src="js/wavesurfer/dist/plugin/wavesurfer.timeline.js"></script>
+<script src="js/wavesurfer/dist/plugin/wavesurfer.regions.js"></script>
+<script src="js/wavesurfer/dist/plugin/wavesurfer.cursor.js"></script>
+<script src="js/wavesurfer/dist/plugin/wavesurfer.minimap.js"></script>
+<script>
+
+
+</script>
 
 </html>

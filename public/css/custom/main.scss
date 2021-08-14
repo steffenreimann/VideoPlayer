@@ -1,0 +1,329 @@
+@import 'vars';
+@import 'video';
+
+@mixin animation-name($name) {
+	animation-name: $name;
+	-webkit-animation-name: $name;
+	-moz-animation-name: $name;
+	-ms-animation-name: $name;
+}
+
+@mixin animation-duration($duration) {
+	animation-duration: $duration;
+	-webkit-animation-duration: $duration;
+	-moz-animation-duration: $duration;
+	-ms-animation-duration: $duration;
+}
+
+@mixin animation-timing-function($func) {
+	animation-timing-function: $func;
+	-webkit-animation-timing-function: $func;
+	-moz-animation-timing-function: $func;
+	-ms-animation-timing-function: $func;
+}
+
+@mixin animation($name, $duration, $timing-func) {
+	@include animation-name($name);
+	@include animation-duration($duration);
+	@include animation-timing-function($timing-func);
+}
+
+a {
+	-webkit-app-region: no-drag;
+}
+
+::-webkit-scrollbar {
+	display: none;
+}
+
+::-webkit-scrollbar-thumb:window-inactive,
+::-webkit-scrollbar-thumb {
+	background: rgb(165, 165, 165);
+}
+
+body {
+	background-color: var(--bg-color);
+	font-family: sans-serif;
+
+	color: var(--text-color);
+}
+
+.sidenav {
+	min-width: 300px;
+	width: 300px;
+	position: absolute;
+	z-index: 999;
+	top: 73px;
+	left: 10px;
+	bottom: 194px;
+	border-radius: 10px;
+	background-color: var(--bg-Controls-color);
+	overflow-x: hidden;
+	color: var(--text-color);
+	overflow-x: hidden;
+}
+
+.sidenav .import {
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	height: 35px;
+	background-color: var(--bg-Controls-color);
+}
+
+.sidenav .resizer {
+	position: absolute;
+	z-index: 2;
+	top: 0px;
+	bottom: 0px;
+	right: 0px;
+	width: 4px;
+	background-color: var(--bg-Nav-color);
+	cursor: e-resize;
+}
+
+.sidenav .closebtn {
+	position: absolute;
+	top: 0;
+	right: 25px;
+	font-size: 36px;
+	margin-left: 50px;
+}
+
+@media screen and (max-height: 450px) {
+	.sidenav {
+		padding-top: 15px;
+	}
+
+	.sidenavItem {
+		font-size: 16px;
+	}
+}
+
+/* Style tab links */
+.tablink {
+	background-color: #555;
+	color: white;
+	float: left;
+	border: none;
+	outline: none;
+	cursor: pointer;
+	padding: 14px 16px;
+	font-size: 17px;
+	width: 25%;
+}
+
+.tablink:hover {
+	background-color: #777;
+}
+
+/* Style the tab content (and add height:100% for full page content) */
+.tabcontent {
+	color: rgb(0, 0, 0);
+	display: none;
+	padding: 100px 20px;
+	height: 100%;
+}
+
+.spin {
+	display: inline-block;
+	width: 50px;
+	height: 50px;
+	border: 3px solid var(--text-color);
+	border-radius: 50%;
+	border-top-color: #fff;
+	animation: spin 1s ease-in-out infinite;
+	-webkit-animation: spin 1s ease-in-out infinite;
+}
+@keyframes spin {
+	to {
+		-webkit-transform: rotate(360deg);
+	}
+}
+@-webkit-keyframes spin {
+	to {
+		-webkit-transform: rotate(360deg);
+	}
+}
+
+.loadingContainer {
+	opacity: 0;
+}
+
+.fadeOut {
+	animation: fadeOut 750ms ease-out both !important;
+}
+
+.fadeIn {
+	animation: fadeIn 750ms ease-out both !important;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes fadeOut {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+}
+
+.textColor {
+	color: var(--text-color);
+}
+
+.spinnerText {
+	font-size: 30px;
+	font-weight: bold;
+	color: var(--text-color);
+	background-color: var(--bg-Controls-color);
+	border-radius: 10px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+	padding-left: 8px;
+	padding-right: 8px;
+	width: max-content;
+	text-align: center;
+	margin-top: 10px;
+	position: absolute;
+	left: 50%;
+	margin-right: -50%;
+	transform: translate(-50%, 0%);
+}
+
+span {
+	position: relative;
+	cursor: pointer;
+}
+
+span[aria-label]:after {
+	opacity: 0;
+	content: attr(aria-label);
+	padding: 4px 8px;
+	position: absolute;
+	white-space: nowrap;
+	z-index: 20;
+	background: var(--bg-Nav-color);
+	transition: opacity 0.5s;
+	pointer-events: none;
+	border-radius: 3px;
+	margin: 0;
+	top: -20px;
+	left: 50%;
+	margin-right: -50%;
+	transform: translate(-50%, -50%);
+	font-family: sans-serif;
+	font-size: 12px;
+	font-weight: normal;
+}
+
+span[aria-label]:hover:after {
+	opacity: .8;
+	transition-delay: .3s;
+}
+
+.but {
+	font-size: 16px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: 0.3s ease-in-out;
+}
+
+.but:hover {
+	transition: 0.3s ease-in-out;
+	background-color: var(--bg-Nav-color);
+}
+
+.ctrlbut {
+	font-size: 16px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: 0.3s ease-in-out;
+	padding: 10px;
+}
+
+.ctrlbut:hover {
+	transition: 0.3s ease-in-out;
+	color: var(--bg-Nav-color);
+}
+
+.ctrlRow {
+	position: absolute;
+	bottom: 0px;
+	height: 50px;
+	width: 700px;
+}
+
+.ctrlPlayBut {
+	position: absolute;
+	bottom: 0px;
+	height: 50px;
+	width: 150px;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.ctrlVol {
+	position: absolute;
+	bottom: 0px;
+	height: 50px;
+	width: 125px;
+	left: 125px;
+}
+
+.ctrlSpeed {
+	position: absolute;
+	bottom: 0px;
+	height: 50px;
+	width: 100px;
+	left: 11px;
+}
+.ctrlExports {
+	position: absolute;
+	bottom: 0px;
+	height: 50px;
+	width: 100px;
+	right: 125px;
+}
+
+.regions {
+	width: 100%;
+	color: #777;
+}
+.region {
+	width: 100%;
+	color: #777;
+}
+
+.region-name {
+	width: 500px;
+}
+
+.region-time {
+	width: 100px;
+}
+
+.region-delete {
+	width: 50px;
+}
+
+.videoExportProgress {
+	position: absolute;
+	top: 42px;
+	left: 0px;
+	width: 100%;
+}
+

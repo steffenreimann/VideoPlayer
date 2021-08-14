@@ -1,0 +1,897 @@
+:root {
+  --bg-color: #f5f5f5;
+  --text-color: #fff;
+  --bg-Controls-color: #555555;
+  --bg-Nav-color: #555555;
+}
+
+.ig {
+  display: flex;
+  position: relative;
+  left: 0px;
+  right: 0px;
+  background-color: transparent;
+}
+
+.ig .input {
+  margin: 0px;
+}
+
+.ig .input button {
+  background-color: white;
+  border-radius: 0px;
+  border-width: 2px 1px 2px 1px;
+}
+
+.ig-item {
+  width: 100%;
+  padding: 7.5px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-sizing: border-box;
+  outline: none;
+  border: 2px solid #b1b1b1;
+  font-size: 18px;
+  transition: all 0.5s ease-in-out;
+  color: #ccc !important;
+  cursor: default;
+}
+
+.ig button span {
+  left: 0px;
+}
+
+.input {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  top: 0px;
+  right: 0px;
+  position: relative;
+}
+
+.input .label-top {
+  font-size: small;
+  position: absolute;
+  top: -16px;
+  width: 100%;
+  left: 0px;
+}
+
+.input .label-bot {
+  font-size: small;
+  position: absolute;
+  top: 40px;
+  left: 0px;
+  width: 100%;
+}
+
+.input .ifas {
+  position: absolute;
+  right: 0px;
+  left: 0px;
+  top: 0px;
+  margin: 11px;
+  pointer-events: none;
+  text-align: right;
+}
+
+input[type=text]:focus {
+  border: 2px solid #2ea1ff;
+  transition: all 0.5s ease-in-out;
+}
+
+input[type=text] {
+  cursor: text !important;
+}
+
+input {
+  width: 100%;
+}
+
+input[type=text],
+input[type=button],
+input[type=submit],
+input[type=reset] {
+  width: 100%;
+  padding: 7.5px 5px;
+  margin: 0px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-sizing: border-box;
+  outline: none;
+  border: 2px solid #b1b1b1;
+  font-size: 18px;
+  transition: all 0.5s ease-in-out;
+  color: #ccc !important;
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  /* Hides the slider so that custom slider can be made */
+  width: 100%;
+  /* Specific width is required for Firefox. */
+  background: transparent;
+  /* Otherwise white in Chrome */
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+}
+
+input[type=range]:focus {
+  outline: none;
+  /* Removes the blue border. You should probably do some kind of focus styling for accessibility reasons though. */
+}
+
+input[type=range]::-ms-track {
+  width: 100%;
+  cursor: pointer;
+  /* Hides the slider so custom styles can be added */
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+
+/* Special styling for WebKit/Blink */
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  border: 1px solid var(--text-color);
+  height: 20px;
+  width: 20px;
+  border-radius: 10px;
+  background: var(--text-color);
+  cursor: pointer;
+  margin-top: -7px;
+  /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
+  /* Add cool effects to your sliders! */
+  transition: 0.3s ease-in-out;
+}
+
+input[type=range]::-webkit-slider-thumb:hover {
+  -webkit-appearance: none;
+  border: 1px solid var(--slider-thumb-color);
+  background: var(--slider-thumb-color);
+  transition: 0.3s ease-in-out;
+  background-color: var(--bg-Nav-color);
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 7px;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+  background: var(--text-color);
+  border-radius: 3px;
+}
+
+input[type=range]::-webkit-slider-runnable-track:hover {
+  -webkit-appearance: none;
+  background: var(--slider-thumb-color);
+  transition: 0.3s ease-in-out;
+  background-color: var(--bg-Nav-color);
+}
+
+input[type=range]::-webkit-slider-runnable-track:hover ~ input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  background: var(--slider-thumb-color);
+  transition: 0.3s ease-in-out;
+  background-color: var(--bg-Nav-color);
+}
+
+button {
+  width: 100%;
+  padding: 7.5px 5px;
+  margin: 0px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-sizing: border-box;
+  outline: none;
+  border: 2px solid #b1b1b1;
+  font-size: 18px;
+  cursor: pointer !important;
+  -webkit-app-region: no-drag;
+}
+
+button:hover {
+  background-color: #ffffff;
+  border: 2px solid #2ea1ff;
+}
+
+button span {
+  position: absolute;
+  /* To make it round */
+  background-color: rgba(0, 0, 0, 0.3);
+  width: 100%;
+  height: 2px;
+  left: 8px;
+  animation: ripple 0.5s;
+  opacity: 0;
+}
+
+.video-player {
+  position: absolute;
+  z-index: 1;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  background-color: black !important;
+}
+
+.video-container {
+  position: relative;
+}
+
+.video-titel {
+  position: fixed;
+  z-index: 3;
+  left: var(--controls-distance);
+  top: var(--controls-distance);
+  right: var(--controls-distance);
+  height: 50px;
+  border-radius: var(--controls-b-radius);
+  background-color: var(--bg-Controls-color);
+  color: var(--text-color);
+}
+
+.video-titel p {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  font-size: 22px;
+}
+
+.video-controls {
+  z-index: 3;
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  left: var(--controls-distance);
+  bottom: var(--controls-distance);
+  right: var(--controls-distance);
+  border-radius: var(--controls-b-radius);
+  height: 170px;
+  background-color: var(--bg-Controls-color);
+  color: var(--text-color);
+}
+
+@keyframes controlsFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes controlsFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+.video-controls .item {
+  position: absolute;
+}
+
+.video-overlay {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+
+.video-player-export {
+  position: absolute;
+  z-index: 1;
+  left: 0px;
+  top: 0px;
+  width: 80% !important;
+  height: 60% !important;
+}
+
+.activVideo {
+  font-weight: bolder;
+  background-color: #9b9b9b;
+}
+
+.playlist {
+  overflow: scroll;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 35px;
+}
+
+.playListItem {
+  position: relative;
+  height: 40px;
+  transition: 0.3s;
+  z-index: 1;
+}
+
+.playListItem:hover {
+  background-color: #111;
+  transition: 0.3s;
+}
+
+.playListItem .item {
+  margin: 10px;
+  position: absolute;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.playListItem .text {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 50px;
+  transition: 0.3s;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: "----";
+}
+
+.playListItem .item:hover {
+  color: #9b9b9b;
+}
+
+.crow {
+  display: flex;
+  left: 0px;
+  right: 0px;
+  margin: 20px;
+}
+
+.c1 {
+  align-items: center;
+  width: 8.33%;
+  padding: var(--padding-colume);
+}
+
+.c2 {
+  align-items: center;
+  width: 16.66%;
+  padding: var(--padding-colume);
+}
+
+.c3 {
+  align-items: center;
+  width: 25%;
+  padding: var(--padding-colume);
+}
+
+.c4 {
+  align-items: center;
+  width: 33.33%;
+  padding: var(--padding-colume);
+}
+
+.c5 {
+  align-items: center;
+  width: 41.66%;
+  padding: var(--padding-colume);
+}
+
+.c6 {
+  align-items: center;
+  width: 50%;
+  padding: var(--padding-colume);
+}
+
+.c7 {
+  align-items: center;
+  width: 58.33%;
+  padding: var(--padding-colume);
+}
+
+.c8 {
+  align-items: center;
+  width: 66.66%;
+  padding: var(--padding-colume);
+}
+
+.c9 {
+  align-items: center;
+  width: 75%;
+  padding: var(--padding-colume);
+}
+
+.c10 {
+  align-items: center;
+  width: 83.33%;
+  padding: var(--padding-colume);
+}
+
+.c11 {
+  align-items: center;
+  width: 91.66%;
+  padding: var(--padding-colume);
+}
+
+.c12 {
+  align-items: center;
+  width: 100%;
+  padding: var(--padding-colume);
+}
+
+@media screen and (max-width: 800px) {
+  .crow {
+    display: block;
+    left: 0px;
+    right: 0px;
+  }
+
+  .c1 {
+    width: 100% !important;
+    float: left;
+  }
+
+  .c2 {
+    width: 100% !important;
+    float: left;
+  }
+
+  .c3 {
+    width: 100% !important;
+    float: left;
+  }
+
+  .c4 {
+    width: 100% !important;
+    float: left;
+  }
+
+  .c5 {
+    width: 100% !important;
+    float: left;
+  }
+
+  .c6 {
+    width: 100% !important;
+    float: left;
+  }
+
+  .c7 {
+    width: 100% !important;
+    float: left;
+  }
+
+  .c8 {
+    width: 100% !important;
+    float: left;
+  }
+
+  .c9 {
+    width: 100% !important;
+    float: left;
+  }
+
+  .c10 {
+    width: 100% !important;
+    float: left;
+  }
+
+  .c11 {
+    width: 100% !important;
+    float: left;
+  }
+
+  .c12 {
+    width: 100% !important;
+    float: left;
+  }
+}
+.ig .c1 {
+  padding: 0px;
+}
+
+.ig .c2 {
+  padding: 0px;
+}
+
+.ig .c3 {
+  padding: 0px;
+}
+
+.ig .c4 {
+  padding: 0px;
+}
+
+.ig .c5 {
+  padding: 0px;
+}
+
+.ig .c6 {
+  padding: 0px;
+}
+
+.ig .c7 {
+  padding: 0px;
+}
+
+.ig .c8 {
+  padding: 0px;
+}
+
+.ig .c9 {
+  padding: 0px;
+}
+
+.ig .c10 {
+  padding: 0px;
+}
+
+.ig .c11 {
+  padding: 0px;
+}
+
+.ig .c12 {
+  padding: 0px;
+}
+
+.center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+}
+
+.center-v {
+  position: absolute;
+  top: 50%;
+  margin-bottom: -50%;
+  transform: translateY(-50%);
+}
+
+.center-h {
+  position: absolute;
+  left: 50%;
+  margin-right: -50%;
+  transform: translateX(-50%);
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.tcenter {
+  text-align: center !important;
+}
+
+.tright {
+  text-align: right !important;
+}
+
+.tleft {
+  text-align: left !important;
+}
+
+.dark {
+  background-color: #111 !important;
+  color: #fff !important;
+}
+
+.tlight {
+  color: #fff !important;
+}
+
+.tdark {
+  color: #111 !important;
+}
+
+.transparent {
+  background-color: transparent !important;
+}
+
+.lockLeft {
+  position: absolute;
+  left: 0px;
+}
+
+.lockRight {
+  position: absolute;
+  right: 0px;
+}
+
+a {
+  -webkit-app-region: no-drag;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+::-webkit-scrollbar-thumb:window-inactive,
+::-webkit-scrollbar-thumb {
+  background: #a5a5a5;
+}
+
+body {
+  background-color: var(--bg-color);
+  font-family: sans-serif;
+  color: var(--text-color);
+}
+
+.sidenav {
+  min-width: 300px;
+  width: 300px;
+  position: absolute;
+  z-index: 999;
+  top: 73px;
+  left: 10px;
+  bottom: 194px;
+  border-radius: 10px;
+  background-color: var(--bg-Controls-color);
+  overflow-x: hidden;
+  color: var(--text-color);
+  overflow-x: hidden;
+}
+
+.sidenav .import {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  height: 35px;
+  background-color: var(--bg-Controls-color);
+}
+
+.sidenav .resizer {
+  position: absolute;
+  z-index: 2;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  width: 4px;
+  background-color: var(--bg-Nav-color);
+  cursor: e-resize;
+}
+
+.sidenav .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {
+    padding-top: 15px;
+  }
+
+  .sidenavItem {
+    font-size: 16px;
+  }
+}
+/* Style tab links */
+.tablink {
+  background-color: #555;
+  color: white;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  font-size: 17px;
+  width: 25%;
+}
+
+.tablink:hover {
+  background-color: #777;
+}
+
+/* Style the tab content (and add height:100% for full page content) */
+.tabcontent {
+  color: black;
+  display: none;
+  padding: 100px 20px;
+  height: 100%;
+}
+
+.spin {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  border: 3px solid var(--text-color);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+  -webkit-animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes spin {
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+.loadingContainer {
+  opacity: 0;
+}
+
+.fadeOut {
+  animation: fadeOut 750ms ease-out both !important;
+}
+
+.fadeIn {
+  animation: fadeIn 750ms ease-out both !important;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+.textColor {
+  color: var(--text-color);
+}
+
+.spinnerText {
+  font-size: 30px;
+  font-weight: bold;
+  color: var(--text-color);
+  background-color: var(--bg-Controls-color);
+  border-radius: 10px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  padding-left: 8px;
+  padding-right: 8px;
+  width: max-content;
+  text-align: center;
+  margin-top: 10px;
+  position: absolute;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, 0%);
+}
+
+span {
+  position: relative;
+  cursor: pointer;
+}
+
+span[aria-label]:after {
+  opacity: 0;
+  content: attr(aria-label);
+  padding: 4px 8px;
+  position: absolute;
+  white-space: nowrap;
+  z-index: 20;
+  background: var(--bg-Nav-color);
+  transition: opacity 0.5s;
+  pointer-events: none;
+  border-radius: 3px;
+  margin: 0;
+  top: -20px;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  font-family: sans-serif;
+  font-size: 12px;
+  font-weight: normal;
+}
+
+span[aria-label]:hover:after {
+  opacity: 0.8;
+  transition-delay: 0.3s;
+}
+
+.but {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+}
+
+.but:hover {
+  transition: 0.3s ease-in-out;
+  background-color: var(--bg-Nav-color);
+}
+
+.ctrlbut {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+  padding: 10px;
+}
+
+.ctrlbut:hover {
+  transition: 0.3s ease-in-out;
+  color: var(--bg-Nav-color);
+}
+
+.ctrlRow {
+  position: absolute;
+  bottom: 0px;
+  height: 50px;
+  width: 700px;
+}
+
+.ctrlPlayBut {
+  position: absolute;
+  bottom: 0px;
+  height: 50px;
+  width: 150px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.ctrlVol {
+  position: absolute;
+  bottom: 0px;
+  height: 50px;
+  width: 125px;
+  left: 125px;
+}
+
+.ctrlSpeed {
+  position: absolute;
+  bottom: 0px;
+  height: 50px;
+  width: 100px;
+  left: 11px;
+}
+
+.ctrlExports {
+  position: absolute;
+  bottom: 0px;
+  height: 50px;
+  width: 100px;
+  right: 125px;
+}
+
+/* Add animation */
+@keyframes ripple {
+  0% {
+    opacity: 0;
+    width: 0%;
+    left: 50%;
+  }
+  50% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 0.1;
+  }
+  100% {
+    opacity: 0;
+    width: 100%;
+    left: 0%;
+  }
+}

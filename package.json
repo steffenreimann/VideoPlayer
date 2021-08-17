@@ -1,6 +1,6 @@
 {
 	"name": "VideoTools",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "",
 	"main": "app.js",
 	"scripts": {
@@ -15,13 +15,15 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/steffenreimann/ElectronExample.git"
+		"url": "git+https://github.com/auupelec/VideoPlayer/VideoPlayer.git"
 	},
 	"author": "Steffen Reimann",
 	"license": "ISC",
 	"dependencies": {
 		"child-process-async": "^1.0.1",
 		"easy-nodejs-app-settings": "^0.0.21",
+		"electron-log": "^4.4.1",
+		"electron-updater": "^4.3.9",
 		"exif-parser": "^0.1.12",
 		"ffmpeg-ffprobe-static": "^4.3.1-rc.6",
 		"ffmpeg-static": "^4.4.0",
@@ -33,21 +35,23 @@
 		"electron": "^13.0.0",
 		"electron-builder": "^22.11.7",
 		"electron-packager": "^15.2.0",
-		"sass": "^1.37.5",
-		"electron-rebuild": "^2.3.5"
+		"electron-rebuild": "^2.3.5",
+		"sass": "^1.37.5"
 	},
 	"bugs": {
-		"url": "https://github.com/steffenreimann/ElectronExample/issues"
+		"url": "https://github.com/auupelec/VideoPlayer/issues"
 	},
-	"homepage": "https://github.com/steffenreimann/ElectronExample#readme",
+	"homepage": "https://github.com/auupelec/VideoPlayer#readme",
 	"build": {
-		"appId": "video.tools",
-		"productName": "Electron Auto Update",
+		"appId": "com.github.auupelec.VideoPlayer",
+		"productName": "VideoTools",
 		"publish": [
 			{
 				"provider": "github",
-				"owner": "steffenreimann",
-				"repo": "VideoPlayer"
+				"owner": "auupelec",
+				"repo": "VideoPlayer",
+				"private": "true",
+				"token": "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"
 			}
 		],
 		"win": {

@@ -4,7 +4,10 @@ var path = require('path');
 var stringMath = require('string-math');
 var url = require('url');
 const fs = require('fs');
-const { log } = require('console');
+
+ipcRenderer.on('message', function(event, text) {
+	console.log('Auto update message = ', text);
+});
 
 window.playlist = [];
 window.currentPlaylistIndex = 0;
@@ -238,7 +241,7 @@ window.onload = function() {
 };
 
 window.init = function() {
-	console.log('Init Function');
+	console.log('Init Function v0.0.2');
 	window.videoelement = document.getElementsByTagName('video').videoplayer;
 	var PlayPauseBTN = document.getElementById('PlayPauseBTN');
 	var controls = document.getElementById('controls');

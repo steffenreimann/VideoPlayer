@@ -1,4 +1,14 @@
 const electron = require('electron');
+
+///////////////////
+// Auto upadater //
+///////////////////
+const log = require('electron-log');
+const { autoUpdater } = require('electron-updater');
+
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = 'info';
+
 const path = require('path');
 const url = require('url');
 const { promises: fs } = require('fs');
@@ -18,6 +28,8 @@ console.log('FFPROBE Path = ', process.env.FFPROBE_PATH);
 
 var ffmpeg = require('fluent-ffmpeg');
 
+var mainWindow = null;
+
 //proc = new ffmpeg({ source: movieUrl, nolog: true, timeout: FFMPEG_TIMEOUT })
 
 //proc.addOptions(opts)
@@ -36,7 +48,7 @@ app.on('ready', function() {
 			contextIsolation: false,
 			nodeIntegration: false,
 			preload: path.join(__dirname, 'preload.js'),
-			devTools: false
+			devTools: true
 		}
 	});
 
@@ -63,7 +75,44 @@ app.on('ready', function() {
 	// Insert menu
 	Menu.setApplicationMenu(mainMenu);
 	mainWindow.toggleDevTools();
+
+	log.info('App starting...');
+
+	function sendStatusToWindow(text) {
+		log.info(text);
+		mainWindow.webContents.send('message', text);
+	}
+
+	autoUpdater.on('checking-for-update', () => {
+		sendStatusToWindow('Checking for update...');
+	});
+	autoUpdater.on('update-available', (info) => {
+		sendStatusToWindow('Update available.');
+	});
+	autoUpdater.on('update-not-available', (info) => {
+		sendStatusToWindow('Update not available.');
+	});
+	autoUpdater.on('error', (err) => {
+		sendStatusToWindow('Error in auto-updater. ' + err);
+	});
+	autoUpdater.on('download-progress', (progressObj) => {
+		let log_message = 'Download speed: ' + progressObj.bytesPerSecond;
+		log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
+		log_message = log_message + ' (' + progressObj.transferred + '/' + progressObj.total + ')';
+		sendStatusToWindow(log_message);
+	});
+	autoUpdater.on('update-downloaded', (info) => {
+		sendStatusToWindow('Update downloaded');
+	});
+autoUpdater.setFeedURL({
+				"provider": "github",
+				"owner": "steffenreimann",
+				"repo": "VideoPlayer",
+				"token": "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"
+			})
+	autoUpdater.checkForUpdatesAndNotify();
 });
+
 
 // Create menu template
 const mainMenuTemplate = [

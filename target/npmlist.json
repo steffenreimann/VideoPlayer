@@ -1,0 +1,1 @@
+{"version":"1.0.0","name":"electronexample","dependencies":{"child-process-async":{"version":"1.0.1"},"easy-nodejs-app-settings":{"version":"0.0.21"},"exif-parser":{"version":"0.1.12"},"ffmpeg-ffprobe-static":{"version":"4.3.1-rc.6"},"ffmpeg-static":{"version":"4.4.0"},"fluent-ffmpeg":{"version":"2.1.2"},"string-math":{"version":"1.2.2"},"wavesurfer.js":{"version":"5.1.0"}}}

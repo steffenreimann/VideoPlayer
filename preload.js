@@ -4,6 +4,7 @@ var path = require('path');
 var stringMath = require('string-math');
 var url = require('url');
 const fs = require('fs');
+const { log } = require('console');
 
 window.playlist = [];
 window.currentPlaylistIndex = 0;
@@ -11,7 +12,7 @@ window.PlaylistLooping = true;
 var isNavOpen = false;
 window.videoelement = null;
 window.currentSpeed = 1;
-var currentSpeedIndex = 5;
+var currentSpeedIndex = 4;
 var playbackSpeeds = [ 0.1, 0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4 ];
 var waitToHideControls = 2500;
 var mosueMoveTimer = null;
@@ -77,7 +78,12 @@ document.addEventListener('drop', (event) => {
 	for (const f of event.dataTransfer.files) {
 		// Using the path attribute to get absolute file path
 		console.log('File Path of dragged files: ', f.path);
-		window.playlist.push(f.path);
+		if (window.playlist.length === 0) {
+			window.playlist.push(f.path);
+			window.playvideoid(0);
+		} else {
+			window.playlist.push(f.path);
+		}
 	}
 	render();
 });
@@ -163,6 +169,8 @@ window.onVideoEnded = function() {
 };
 
 window.playvideoid = async function(videoid) {
+	window.playvideo(window.playlist[videoid]);
+	return;
 	console.log('Play video id  = ', videoid);
 	console.log('Play video path = ', window.playlist[videoid]);
 	window.currentPlaylistIndex = videoid;
@@ -181,11 +189,6 @@ window.removevideoid = function(videoid) {
 	if (videoid == window.currentPlaylistIndex) {
 		window.next();
 	}
-	render();
-};
-
-window.startDeleteFromDrive = function(videoid) {
-	console.log('startDeleteFromDrive');
 	render();
 };
 
@@ -216,7 +219,7 @@ function render() {
                 
                 ${path.basename(element)}
             </div>
-            <div class="item" style="right: 20px;" onclick="window.startDeleteFromDrive('${i}')">
+            <div class="item" style="right: 20px;" onclick="window.openModal('confirmModal')">
                 <i class="fas fa-trash"></i>
             </div>
             <div class="item" style="right: 0px;" onclick="window.removevideoid('${i}')">
@@ -500,15 +503,6 @@ window.init = function() {
 		wavesurfer.drawer.updateSize();
 	});
 
-	document.getElementById('exportVideoCeckbox').addEventListener('change', function() {
-		console.log('exportVideoCeckbox changed');
-		setExportButtonText();
-	});
-	document.getElementById('exportClipsCeckbox').addEventListener('change', function() {
-		console.log('exportClipsCeckbox changed');
-		setExportButtonText();
-	});
-
 	ipcRenderer.on('ProgressEvent', (event, data) => {
 		console.log('ProgressEvent = ', data);
 		window.renderCurrentExportProcess(data);
@@ -517,6 +511,17 @@ window.init = function() {
 		console.log('StartEvent = ', data);
 		changeProgress('videoExport', 0);
 		//window.renderExportText();
+	});
+
+	var volInterval = null;
+	document.getElementById('volume').addEventListener('mousedown', function(params) {
+		volInterval = setInterval(function() {
+			var vol = document.getElementById('volume').value;
+			window.videoelement.volume = map(vol, 0, 100, 0, 1);
+		}, 10);
+	});
+	document.getElementById('volume').addEventListener('mouseup', function(params) {
+		clearInterval(volInterval);
 	});
 
 	window.showControls();
@@ -937,30 +942,55 @@ window.IncDecVolume = function(step, Incerase) {
 
 window.playvideo = async function(video) {
 	console.log('Play video = ', video);
-	console.log('window.videoelement = ', window.videoelement);
-	window.videoelement.src = video;
-	window.videoelement.play;
-	wavesurfer.empty();
-	wavesurfer.load(window.videoelement);
-	currentVideoInfos = await window.getFileInfos();
+	console.log(path.parse(video).ext);
 
-	exportDuration = parseFloat(currentVideoInfos.streams[0].duration);
-	console.log(exportDuration);
+	if (window.checkFileType(video) === 'img') {
+		document.getElementById('img-cover').src = video;
 
-	render();
+		window.videoelement.pause();
+		wavesurfer.empty();
+		wavesurfer.clearRegions();
+		window.videoelement.src = '';
+		document.getElementById('img-cover').style.zIndex = '1';
+		window.videoelement.style.zIndex = '0';
+		render();
+		await delay(5000);
+		window.next();
+	} else {
+		window.videoelement.src = video;
+		window.videoelement.play;
+		wavesurfer.empty();
+		wavesurfer.clearRegions();
+		wavesurfer.load(window.videoelement);
+		document.getElementById('img-cover').style.zIndex = '0';
+		window.videoelement.style.zIndex = '1';
+		currentVideoInfos = await window.getFileInfos();
+		render();
+	}
+};
+
+window.checkFileType = function(file) {
+	console.log(file);
+	var i = path.parse(file).ext;
+
+	if (i === '.apng' || i === '.avif' || i === '.gif' || i === '.jpg' || i === '.jpeg' || i === '.jfif' || i === '.pjpeg' || i === '.pjp' || i === '.png' || i === '.svg' || i === '.webp' || i === '.bmp' || i === '.ico' || i === '.cur' || i === '.tif' || i === '.tiff') {
+		return 'img';
+	} else {
+		return 'video';
+	}
 };
 
 window.openModal = async function(elementid, openModalFunction) {
 	console.log('Open Modal = ', elementid);
 	//Show the Spinner
-	window.ShowLoadingSpinner('Start Loading ' + elementid, true);
+	//window.ShowLoadingSpinner('Start Loading ' + elementid, true);
 	//Check if The callback function is a function
 	if (typeof openModalFunction === 'function') {
 		//Call the callback function
 		await openModalFunction(elementid);
 	}
 	//Hide the spinner and text
-	window.hideLoadingSpinner();
+	//window.hideLoadingSpinner();
 	//Show the modal
 	window.fadeInOut(elementid, true);
 	document.getElementById(elementid).style.display = 'block';
@@ -989,6 +1019,7 @@ window.exportModalFunction = async function(id) {
 
 	//console.log(wavesurfer.regions.list);
 	//console.log(Object.keys(wavesurfer.regions.list).length);
+	//window.renderExportRegion(id);
 	window.renderExportRegion(id);
 	console.log(path.parse(window.playlist[window.currentPlaylistIndex]));
 
@@ -1017,24 +1048,24 @@ window.renderExportRegion = async function(id) {
 							
                             <div class="ig c12" >
 								<div class="input c2">
-									<div class="region ig-item" id="${wavesurfer.regions.list[key].id}">
+									<div class="region ig-item dark" id="${wavesurfer.regions.list[key].id}">
 										<span class="region-time">${wavesurfer.regions.list[key].start.toFixed()} - ${wavesurfer.regions.list[key].end.toFixed()}</span>
 									</div>
 								</div>
                                 <div class="input c1">
                                     <label class="label-top">Bitrate kBit/s</label>
-                                    <input type="text" id="videoexport-bitrate-${key}" class="ig-item transparent" value="${bitrate}" />
+                                    <input type="text" id="videoexport-bitrate-${key}" class="ig-item dark" value="${bitrate}" />
                                 </div>
                                 <div class="input c1">
                                     <label class="label-top">Quality </label>
-                                    <input type="text" id="videoexport-quality-${key}" class="ig-item transparent" value="100" />
+                                    <input type="text" id="videoexport-quality-${key}" class="ig-item dark" value="100" />
                                 </div>
                                 <div class="input c1">
                                     <label class="label-top">fps</label>
-                                    <input type="text" id="videoexport-fps-${key}" class="ig-item transparent" value="${fps}" />
+                                    <input type="text" id="videoexport-fps-${key}" class="ig-item dark" value="${fps}" />
                                 </div>
                                 <div class="input c2">
-                                    <div class="select ig-item transparent">
+                                    <div class="select ig-item dark">
                                         <select id="videoexport-format-${key}" class="">
                                             <option value="mp4">mp4</option>
                                             <option value="mov">mov</option>
@@ -1047,10 +1078,10 @@ window.renderExportRegion = async function(id) {
                                     </div>
                                 </div>
 								<div class="input c4">
-                                    <button type="button" onclick="window.exportClip('${key}')" class="ig-item transparent">Add to Export List</button>
+                                    <button type="button" onclick="window.exportClip('${key}')" class="ig-item dark">Add to Export List</button>
                                 </div>
 								<div class="input c1">
-                                    <button type="button" onclick="window.removeRegion('${wavesurfer.regions.list[key].id}')" class="ig-item transparent">X</button>
+                                    <button type="button" onclick="window.removeRegion('${wavesurfer.regions.list[key].id}')" class="ig-item dark">X</button>
                                 </div>
                             </div>
                         </div>
@@ -1066,9 +1097,9 @@ window.SettingsModalFunction = async function(id) {
 	console.log('Settings Modal Function = ', id);
 	window.setLoadingSpinnerText('Loading...');
 
-	await delay(5000);
+	//await delay(5000);
 	window.setLoadingSpinnerText('Finished...');
-	await delay(300);
+	//await delay(300);
 	return;
 };
 
@@ -1113,6 +1144,7 @@ window.openFiles = async function(params) {
 	const result = await ipcRenderer.invoke('openFiles', params);
 	console.log('Open Files result = ', result);
 	playlist = playlist.concat(result.filePaths);
+	//window.playvideo();
 	render();
 	return result;
 };
@@ -1138,15 +1170,19 @@ window.exportVideo = async function() {
 	}
 
 	var data = { inputFile: window.playlist[window.currentPlaylistIndex] };
+	data.uuid = UUID();
 	data.format = document.getElementById('videoexport-format').value;
 	data.videoBitrate = document.getElementById('videoexport-bitrate').value;
 	data.fps = document.getElementById('videoexport-fps').value;
 	data.quality = document.getElementById('videoexport-quality').value;
 	data.videoname = document.getElementById('videoexportnameInputField').value;
-	data.outputFile = path.join(currentExportPath, `${data.videoname}.${data.format}`);
+	data.outputFile = path.join(currentExportPath, `${data.videoname}_fps-${data.fps}_q-${data.quality}_vb-${data.videoBitrate}.${data.format}`);
 
 	console.log(data);
+	window.addCurrentExport(data);
+	return;
 	exportList.push(data);
+	window.renderCurrentExports();
 	//const result = await ipcRenderer.invoke('convertFile', data);
 	return;
 };
@@ -1167,30 +1203,110 @@ window.exportClip = async function(regionID) {
 	data.videoBitrate = document.getElementById('videoexport-bitrate-' + regionID).value;
 	data.fps = document.getElementById('videoexport-fps-' + regionID).value;
 	data.quality = document.getElementById('videoexport-quality-' + regionID).value;
-	data.outputFile = path.join(currentExportPath, `${document.getElementById('videoexportnameInputField').value}_Clip_${start.toFixed()}-${end.toFixed()}.${data.format}`);
+	data.outputFile = path.join(currentExportPath, `${document.getElementById('videoexportnameInputField').value}_Clip_${start.toFixed()}-${end.toFixed()}_fps-${data.fps}_q-${data.quality}_vb-${data.videoBitrate}.${data.format}`);
 
-	exportList.push(data);
+	//exportList.push(data);
+	window.addCurrentExport(data);
+	return;
+	window.renderCurrentExports();
 	//const result = await ipcRenderer.invoke('convertFile', data);
 
 	return;
 };
 
-window.addCurrentExport = async function(uuid, data) {
-	currentExports[uuid] = data;
-	window.renderCurrentExports();
-};
-
-window.addCurrentExportToHistory = async function(uuid) {
-	exportHistory[uuid] = currentExports[uuid];
-	delete currentExports[uuid];
-
+window.addCurrentExport = async function(data) {
+	var check = await ckeckNewExportItem(data);
+	if (check) {
+		currentExports[data.uuid] = data;
+	}
 	window.renderCurrentExports();
 	window.renderHistoryExports();
 };
 
-window.renderCurrentExports = function() {};
+async function ckeckNewExportItem(data) {
+	return new Promise((resolve) => {
+		for (var key in currentExports) {
+			var element = currentExports[key];
+			if (element.outputFile == data.outputFile) {
+				resolve(false);
+			}
+		}
+		resolve(true);
+	});
+}
 
-window.renderHistoryExports = function() {};
+window.addCurrentExportToHistory = async function(uuid) {
+	exportHistory[uuid] = currentExports[uuid];
+	console.log(`UUID = ${uuid} // Export History = ${JSON.stringify(exportHistory[uuid])} // Current Exports = ${JSON.stringify(currentExports[uuid])}`);
+
+	window.removeFromExportList(uuid);
+	window.renderHistoryExports();
+};
+
+window.removeFromExportList = async function(uuid) {
+	delete currentExports[uuid];
+	window.renderCurrentExports();
+};
+
+window.renderCurrentExports = function() {
+	var exportListHTML = ``;
+
+	Object.keys(currentExports).forEach(function(key) {
+		const element = currentExports[key];
+		exportListHTML += `<div class="row" >
+		<div class="c1 tcenter">
+		${element.videoBitrate}kBit/s
+		</div>
+		<div class="c1 tcenter">
+		${element.quality} %
+		</div>
+		<div class="c1 tcenter">
+		${element.fps} FPS
+		</div>
+		<div class="c1 tcenter">
+		${element.format} 
+		</div>
+		<div class="c7 tcenter">
+		${element.outputFile} 
+		</div>
+		<div class="c1 tcenter" onclick="window.removeFromExportList('${key}')">
+		Remove
+		</div>
+		</div>`;
+	});
+	document.getElementById('exportList').innerHTML = exportListHTML;
+};
+
+window.renderHistoryExports = function() {
+	var exportHListHTML = ``;
+
+	Object.keys(exportHistory).forEach(function(key) {
+		const element = exportHistory[key];
+		console.log('Path test ', path.normalize(element.outputFile));
+		console.log('Path test ', element.outputFile.replace(/\\/g, '/'));
+		console.log('History Element = ', element);
+		exportHListHTML += `<div class="row" >
+		<div class="c1 tcenter">
+		${element.videoBitrate}kBit/s
+		</div>
+		<div class="c1 tcenter">
+		${element.quality} %
+		</div>
+		<div class="c1 tcenter">
+		${element.fps} FPS
+		</div>
+		<div class="c1 tcenter">
+		${element.format} 
+		</div>
+		<div class="c8 tcenter">
+		<div onclick="window.openFileInBrowserAndHighlight('${element.outputFile.replace(/\\/g, '/')}')">${element.outputFile} </div>
+		
+		</div>
+		
+		</div>`;
+	});
+	document.getElementById('exportHList').innerHTML = exportHListHTML;
+};
 
 var ExportFilesLength = 0;
 var ExportFilesFinished = 0;
@@ -1223,10 +1339,21 @@ window.exportAllClips = async function() {
 
 var exportList = [];
 window.startExport = async function() {
-	for (let index = 0; index < exportList.length; index++) {
-		document.getElementById('exportText').innerHTML = `${index + 1}/${exportList.length} File ${exportList[index].outputFile}`;
-		const result = await ipcRenderer.invoke('convertFile', exportList[index]);
+	var index = 0;
+	exportHistory = {};
+	renderHistoryExports();
+	for (var key in currentExports) {
+		if (currentExports.hasOwnProperty(key)) {
+			var element = currentExports[key];
+
+			document.getElementById('exportText').innerHTML = `${index + 1}/${Object.keys(currentExports).length} File ${element.outputFile}`;
+			const result = await ipcRenderer.invoke('convertFile', element);
+
+			window.addCurrentExportToHistory(result.data.uuid);
+		}
+		index++;
 	}
+
 	document.getElementById('exportText').innerHTML = `Finished`;
 	exportList = [];
 	return;
@@ -1420,10 +1547,23 @@ window.isFullscreen = function() {
 	}
 };
 
-window.openFileInBrowserAndHighlight = function() {
-	if (window.playlist[window.currentPlaylistIndex]) {
-		ipcRenderer.invoke('openFileInBrowserAndHighlight', window.playlist[window.currentPlaylistIndex]);
+window.openFileInBrowserAndHighlight = function(data) {
+	if (typeof data == 'undefined' || data == null || data == '') {
+		if (window.playlist[window.currentPlaylistIndex]) {
+			ipcRenderer.invoke('openFileInBrowserAndHighlight', window.playlist[window.currentPlaylistIndex]);
+		}
+	} else {
+		console.log('Open in Browser = ', data.replaceAll('/', '\\'));
+		ipcRenderer.invoke('openFileInBrowserAndHighlight', data.replaceAll('/', '\\'));
 	}
+};
+
+window.startDeleteFromDrive = function() {
+	console.log('window.startDeleteFromDrive = ');
+
+	ipcRenderer.invoke('deleteFromDrive', window.playlist[window.currentPlaylistIndex]);
+	window.removevideoid(currentPlaylistIndex);
+	window.closeModal('confirmModal');
 };
 
 function delay(ms) {

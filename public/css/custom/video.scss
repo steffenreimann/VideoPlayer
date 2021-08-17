@@ -8,6 +8,16 @@
 	background-color: black !important;
 }
 
+.img-player {
+	position: absolute;
+	z-index: 1;
+	left: 0px;
+	top: 0px;
+	width: 100%;
+
+	background-color: black !important;
+}
+
 .video-container {
 	position: relative;
 }

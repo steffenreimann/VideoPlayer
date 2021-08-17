@@ -30,12 +30,13 @@ app.on('ready', function() {
 		height: 720,
 		minHeight: 720,
 		minWidth: 720,
-		title: 'Electon Example',
+		title: 'VideoTools',
 		//autoHideMenuBar: true, //hide menu bar
 		webPreferences: {
 			contextIsolation: false,
 			nodeIntegration: false,
-			preload: path.join(__dirname, 'preload.js')
+			preload: path.join(__dirname, 'preload.js'),
+			devTools: false
 		}
 	});
 
@@ -44,7 +45,7 @@ app.on('ready', function() {
 			pathname: path.join(__dirname, 'public/index.html'),
 			protocol: 'file:',
 			slashes: true,
-			title: 'Electron Example'
+			title: 'VideoTools'
 		})
 	);
 
@@ -203,16 +204,16 @@ ipcMain.handle('getFileInfos', async (event, filePath) => {
 	// console.log(childInfoOut.stderr.toString());
 	// console.log(childInfoOut);
 
-	const childHash = await spawn(process.env.FFMPEG_PATH, [ '-i', filePath, '-map', '0:v', '-c', 'copy', '-f', 'hash', '-hash', 'md5', '-' ]);
-	const childHashOut = await childHash;
-	var outHashString = childHashOut.stdout.toString().normalize();
-	outHashString = outHashString.split('=')[1];
+	//const childHash = await spawn(process.env.FFMPEG_PATH, [ '-i', filePath, '-map', '0:v', '-c', 'copy', '-f', 'hash', '-hash', 'md5', '-' ]);
+	//const childHashOut = await childHash;
+	//var outHashString = childHashOut.stdout.toString().normalize();
+	//outHashString = outHashString.split('=')[1];
 	//console.log(outHashString);
 	//console.log(childHashOut.stderr.toString());
 	//console.log(childHashOut);
 
 	var returnData = JSON.parse(childInfoOut.stdout.toString());
-	returnData.hash = childHashOut.stdout.toString();
+	//returnData.hash = childHashOut.stdout.toString();
 	console.log(returnData);
 	return returnData;
 });
@@ -318,6 +319,12 @@ ipcMain.handle('openFileInBrowserAndHighlight', async (event, data) => {
 	return;
 });
 
+ipcMain.handle('deleteFromDrive', async (event, data) => {
+	console.log('deleteFromDrive');
+	var ret = await fs.unlink(data);
+	return ret;
+});
+
 // This is the Test Function that you can call from Menu
 var i = 0;
 function testFunction(params) {
@@ -419,14 +426,15 @@ async function convertFile(data) {
 
 		proc.on('error', function(err) {
 			console.log('error: ', +err);
-			resolve('Error!', err);
+
+			resolve({ msg: 'Error!', data: data, err: err });
 			removeProc(pid);
 		});
 
 		proc.on('end', function(err) {
 			if (!err) {
 				console.log('conversion Done');
-				resolve('Finished', false);
+				resolve({ msg: 'Finished', data: data, err: false });
 			}
 			removeProc(pid);
 		});

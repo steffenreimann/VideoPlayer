@@ -212,7 +212,7 @@ span[aria-label]:after {
 	position: absolute;
 	white-space: nowrap;
 	z-index: 20;
-	background: var(--bg-Nav-color);
+	background: rgb(36, 36, 36);
 	transition: opacity 0.5s;
 	pointer-events: none;
 	border-radius: 3px;
@@ -224,6 +224,7 @@ span[aria-label]:after {
 	font-family: sans-serif;
 	font-size: 12px;
 	font-weight: normal;
+	color: white;
 }
 
 span[aria-label]:hover:after {
@@ -257,7 +258,7 @@ span[aria-label]:hover:after {
 
 .ctrlbut:hover {
 	transition: 0.3s ease-in-out;
-	color: var(--bg-Nav-color);
+	color: var(--text-color-hover);
 }
 
 .ctrlRow {
@@ -326,4 +327,3 @@ span[aria-label]:hover:after {
 	left: 0px;
 	width: 100%;
 }
-

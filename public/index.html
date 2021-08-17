@@ -4,9 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
-    <title>Video Player</title>
+    <title>VideoTools</title>
     <!-- MDB icon -->
-    <link rel="icon" href="img/mdb-favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="img/videotools.ico" type="image/x-icon" />
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" />
     <!-- Google Fonts Roboto -->
@@ -67,6 +67,7 @@
                 <video class="video-player" id="videoplayer" onended="window.onVideoEnded()" src="">
 
                 </video>
+                <image id="img-cover" class="img-player" style="z-index: 0;" src=""></image>
 
                 <!-- Video Controls -->
                 <div id="controls" class="video-controls">
@@ -134,10 +135,10 @@
                                 <div class="ctrlbut center" onclick="window.openModal('exportModal',window.exportModalFunction)">
                                     <span aria-label="Export" class="fas fa-file-video"></span>
                                 </div>
-
-                                <div class="ctrlbut lockRight center-v" onclick="window.openModal('settingsModal',window.SettingsModalFunction)">
+                                <!--<div class="ctrlbut lockRight center-v" onclick="window.openModal('settingsModal',window.SettingsModalFunction)">
                                     <span aria-label="Settings" class="fas fa-cogs"></span>
-                                </div>
+                                </div> -->
+
                             </div>
 
 
@@ -161,11 +162,11 @@
             <!-- The Modal -->
             <div id="exportModal" class="modal ">
                 <div class="modal-content">
-                    <div class="modal-header row">
+                    <div class="modal-head row">
 
-                        <button class="tablink" onclick="openPage('Export', this, 'red')">Export</button>
+                        Export
 
-                        <button type="button" onclick="window.closeModal('exportModal')" class="tablink"></button>
+                        <button type="button" onclick="window.closeModal('exportModal')" class="fas fa-times"></button>
                     </div>
                     <div class="container">
 
@@ -177,10 +178,10 @@
                         <div class="row">
                             <div class="ig c12">
                                 <div class="input c6 ">
-                                    <input type="text" id="videoexportdirpathInputField" onclick="window.changeExportPath()" class="ig-item transparent" />
+                                    <input type="text" id="videoexportdirpathInputField" onclick="window.changeExportPath()" class="ig-item dark" />
                                 </div>
                                 <div class="input c6 ">
-                                    <input type="text" id="videoexportnameInputField" class="ig-item transparent" />
+                                    <input type="text" id="videoexportnameInputField" class="ig-item dark" />
                                 </div>
                             </div>
                         </div>
@@ -191,18 +192,20 @@
 
                                 <div class="input c2">
                                     <label class="label-top">Bitrate kBit/s</label>
-                                    <input type="text" id="videoexport-bitrate" class="ig-item transparent" />
+                                    <input type="text" id="videoexport-bitrate" class="ig-item dark" />
                                 </div>
                                 <div class="input c2">
                                     <label class="label-top">Quality</label>
-                                    <input type="text" id="videoexport-quality" class="ig-item transparent" value="100" />
+                                    <input type="text" id="videoexport-quality" class="ig-item dark" value="100" />
                                 </div>
                                 <div class="input c2">
                                     <label class="label-top">Frams per Secound</label>
-                                    <input type="text" id="videoexport-fps" class="ig-item transparent" />
+                                    <input type="text" id="videoexport-fps" class="ig-item dark" />
                                 </div>
                                 <div class="input c3">
-                                    <div class="select ig-item transparent">
+                                    <label class="label-top">Export Format</label>
+                                    <div class="select ig-item dark">
+
                                         <select id="videoexport-format" class="">
                                             <option value="mp4">mp4</option>
                                             <option value="mov">mov</option>
@@ -215,7 +218,7 @@
                                     </div>
                                 </div>
                                 <div class="input c3 ">
-                                    <button type="button" class="ig-item transparent" onclick="window.exportVideo()">
+                                    <button type="button" class="ig-item dark" onclick="window.exportVideo()">
                                         Add to Export List
                                     </button>
                                 </div>
@@ -245,25 +248,12 @@
                                 <p id="exportText"></p>
                             </div>
 
-                            <div class="ig c5 ">
-                                <div class="input c2 ">
-                                    <div class="ig-item">
-                                        <label class="label-top">Video</label>
-                                        <input type="checkbox" id="exportVideoCeckbox" class="">
-                                    </div>
 
-                                </div>
-                                <div class="input c2 ">
-                                    <div class="ig-item">
-                                        <label class="label-top">Clips</label>
-                                        <input type="checkbox" id="exportClipsCeckbox" class="">
-                                    </div>
-                                </div>
-                                <div class="input c8 ">
-                                    <button type="button" id="exportbtn" onclick="window.startExport()" class="ig-item" disabled="true">Export nothing</button>
-                                </div>
-
+                            <div class="input c5 ">
+                                <button type="button" id="exportbtn" onclick="window.startExport()" class="ig-item dark">Start Export</button>
                             </div>
+
+
                         </div>
 
 
@@ -273,26 +263,56 @@
                     <div id="videoExport" class="progress " value="0">
 
                     </div>
+                    Export List
+                    <div id="exportList"></div>
+                    Finnished Exports
+                    <div id="exportHList"></div>
                 </div>
             </div>
             <div id="settingsModal" class="modal ">
                 <div class="modal-content">
-                    <div class="modal-header">
+                    <div class="modal-head">
 
 
-                        <button class="tablink" onclick="openPage('Settings', this, 'red')">Settings</button>
-                        <button type="button" onclick="window.closeModal('settingsModal')" class="btn-close" aria-label="Close"></button>
+                        Settings
+                        <button type="button" onclick="window.closeModal('settingsModal')" class="fas fa-times">
+
+                        </button>
                     </div>
                     <div class="modal-body">
 
-                        <h3>Settings</h3>
+
 
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">
+                    <div class="modal-foot">
+                        <button type="button" class="btn btn-secondary">
                             Close
                         </button>
                         <button type="button" onclick="window.exportVideo()" class="btn btn-primary">Export All</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="confirmModal" class="modal ">
+                <div class="modal-content">
+                    <div class="modal-head">
+
+
+                        Delete Video from Drive ?
+                        <button type="button" onclick="window.closeModal('confirmModal')" class="fas fa-times"></button>
+                    </div>
+                    <div class="modal-body">
+
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="" onclick="window.startDeleteFromDrive()">
+                            Yes
+                        </button>
+                        <button type="button" class="" onclick="window.closeModal('confirmModal')">
+                            No
+                        </button>
                     </div>
                 </div>
             </div>

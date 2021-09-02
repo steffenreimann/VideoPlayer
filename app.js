@@ -1,14 +1,9 @@
 const electron = require('electron');
-
-///////////////////
-// Auto upadater //
-///////////////////
+var os = require('os');
 const log = require('electron-log');
 const { autoUpdater } = require('electron-updater');
-
-autoUpdater.logger = log;
-autoUpdater.logger.transports.file.level = 'info';
-
+var pathToFfmpeg = require('ffmpeg-ffprobe-static');
+var ffmpeg = require('fluent-ffmpeg');
 const path = require('path');
 const url = require('url');
 const { promises: fs } = require('fs');
@@ -16,17 +11,35 @@ const settings = require('easy-nodejs-app-settings');
 // SET ENV
 process.env.NODE_ENV = 'development';
 const { app, BrowserWindow, Menu, ipcMain, dialog } = electron;
+var ffmetadata = require('ffmetadata');
+var platform = os.platform();
+//patch for compatibilit with electron-builder, for smart built process.
+if (platform == 'darwin') {
+	platform = 'mac';
+} else if (platform == 'win32') {
+	platform = 'win';
+}
 
-var pathToFfmpeg = require('ffmpeg-static');
-var pathToFfmpeg = require('ffmpeg-ffprobe-static');
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = 'info';
+autoUpdater.autoDownload = false;
+autoUpdater.autoInstallOnAppQuit = false;
+autoUpdater.channel = 'alpha';
 
+if (app.isPackaged) {
+	pathToFfmpeg.ffmpegPath = pathToFfmpeg.ffmpegPath.replace('app.asar', 'app.asar.unpacked');
+	pathToFfmpeg.ffprobePath = pathToFfmpeg.ffprobePath.replace('app.asar', 'app.asar.unpacked');
+}
+
+log.info('pathToFfmpeg', pathToFfmpeg);
 process.env.FFMPEG_PATH = pathToFfmpeg.ffmpegPath;
 process.env.FFPROBE_PATH = pathToFfmpeg.ffprobePath;
 
-console.log('FFMPEG Path = ', process.env.FFMPEG_PATH);
-console.log('FFPROBE Path = ', process.env.FFPROBE_PATH);
+// Set path to ffmpeg - optional if in $PATH or $FFMPEG_PATH
+ffmetadata.setFfmpegPath(process.env.FFMPEG_PATH);
 
-var ffmpeg = require('fluent-ffmpeg');
+log.info('FFMPEG Path = ', process.env.FFMPEG_PATH);
+log.info('FFPROBE Path = ', process.env.FFPROBE_PATH);
 
 var mainWindow = null;
 
@@ -38,8 +51,8 @@ var mainWindow = null;
 app.on('ready', function() {
 	// Create new window
 	mainWindow = new BrowserWindow({
-		width: 1270,
-		height: 720,
+		width: 1470,
+		height: 920,
 		minHeight: 720,
 		minWidth: 720,
 		title: 'VideoTools',
@@ -77,6 +90,7 @@ app.on('ready', function() {
 	mainWindow.toggleDevTools();
 
 	log.info('App starting...');
+	//log.info(autoUpdater);
 
 	function sendStatusToWindow(text) {
 		log.info(text);
@@ -84,43 +98,93 @@ app.on('ready', function() {
 	}
 
 	autoUpdater.on('checking-for-update', () => {
-		sendStatusToWindow('Checking for update...');
+		updateStatus = 'checking-for-update';
+		sendStatusToWindow({ type: 'update', status: 'checking-for-update' });
 	});
 	autoUpdater.on('update-available', (info) => {
-		sendStatusToWindow('Update available.');
+		updateStatus = 'update-available';
+		sendStatusToWindow({ type: 'update', status: 'update-available' });
 	});
 	autoUpdater.on('update-not-available', (info) => {
-		sendStatusToWindow('Update not available.');
+		updateStatus = 'update-not-available';
+		sendStatusToWindow({ type: 'update', status: 'update-not-available' });
 	});
 	autoUpdater.on('error', (err) => {
-		sendStatusToWindow('Error in auto-updater. ' + err);
+		updateStatus = 'error';
+		//sendStatusToWindow({ type: 'update', status: 'error', error: err });
 	});
 	autoUpdater.on('download-progress', (progressObj) => {
 		let log_message = 'Download speed: ' + progressObj.bytesPerSecond;
 		log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
 		log_message = log_message + ' (' + progressObj.transferred + '/' + progressObj.total + ')';
-		sendStatusToWindow(log_message);
+		updateStatus = 'download-progress';
+		sendStatusToWindow({ type: 'update', status: 'download-progress', progress: progressObj });
 	});
 	autoUpdater.on('update-downloaded', (info) => {
-		sendStatusToWindow('Update downloaded');
+		updateStatus = 'update-downloaded';
+		sendStatusToWindow({ type: 'update', status: 'update-downloaded' });
+		sendStatusToWindow('Start Install');
+		autoUpdater.quitAndInstall();
 	});
-autoUpdater.setFeedURL({
-				"provider": "github",
-				"owner": "steffenreimann",
-				"repo": "VideoPlayer",
-				"token": "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"
-			})
-	autoUpdater.checkForUpdatesAndNotify();
+	autoUpdater.setFeedURL({
+		provider: 'github',
+		owner: 'steffenreimann',
+		repo: 'VideoPlayer'
+	});
+
+	autoUpdater.checkForUpdates().then((data) => {
+		//log.info('checkForUpdates ');
+		sendStatusToWindow(data);
+	});
+
+	//autoUpdater.checkForUpdatesAndNotify().then(() => {
+	//	updateStatus = 'update-check-finished';
+	//	sendStatusToWindow({ type: 'update', status: 'update-check-finished' });
+	//});
 });
 
+var updateStatus = null;
+
+ipcMain.handle('checking-update-status', async (event, data) => {
+	log.info(data);
+
+	if (!updateStatus) {
+		autoUpdater.checkForUpdatesAndNotify().then(() => {
+			updateStatus = 'update-check-finished';
+			sendStatusToWindow({ type: 'update', status: 'update-check-finished' });
+		});
+	}
+
+	return updateStatus;
+});
+ipcMain.handle('downloadAndApplyUpdate', async (event, data) => {
+	return new Promise((resolve, reject) => {
+		autoUpdater.downloadUpdate();
+	});
+});
 
 // Create menu template
 const mainMenuTemplate = [
 	// Each object is a dropdown
 	{
-		label: 'Application',
+		label: 'App',
 		submenu: [
-			{ label: 'About Application', selector: 'orderFrontStandardAboutPanel:' },
+			{
+				label: 'Export Frame',
+				accelerator: 'CmdOrCtrl+R',
+				click: function() {
+					callPlayerFunction('exportFrame');
+					//callFrameExportWindow();
+				}
+			},
+			{
+				label: 'Export Video and Clips',
+				accelerator: 'CmdOrCtrl+E',
+				click: function() {
+					//callVideoExportWindow();
+					callPlayerFunction('openExport');
+				}
+			},
 			{ type: 'separator' },
 			{
 				label: 'Quit',
@@ -132,26 +196,51 @@ const mainMenuTemplate = [
 		]
 	},
 	{
-		label: 'Edit',
+		label: 'Player',
 		submenu: [
-			{ label: 'Undo', accelerator: 'CmdOrCtrl+Z', selector: 'undo:' },
-			{ label: 'Redo', accelerator: 'Shift+CmdOrCtrl+Z', selector: 'redo:' },
-			{ type: 'separator' },
 			{
-				label: 'Test Function Call',
+				label: 'Slower',
 				accelerator: 'CmdOrCtrl+S',
 				click: function() {
-					testFunction();
+					callPlayerFunction('Slower');
+				}
+			},
+			{
+				label: 'Faster',
+				accelerator: 'CmdOrCtrl+D',
+				click: function() {
+					callPlayerFunction('Faster');
 				}
 			},
 			{ type: 'separator' },
-			{ label: 'Cut', accelerator: 'CmdOrCtrl+X', selector: 'cut:' },
-			{ label: 'Copy', accelerator: 'CmdOrCtrl+C', selector: 'copy:' },
-			{ label: 'Paste', accelerator: 'CmdOrCtrl+V', selector: 'paste:' },
-			{ label: 'Select All', accelerator: 'CmdOrCtrl+A', selector: 'selectAll:' }
+			{
+				label: 'Before',
+				accelerator: 'CmdOrCtrl+F',
+				click: function() {
+					callPlayerFunction('Before');
+				}
+			},
+			{
+				label: 'Toggle Play',
+				accelerator: 'CmdOrCtrl+G',
+				click: function() {
+					callPlayerFunction('TogglePlay');
+				}
+			},
+			{
+				label: 'Next',
+				accelerator: 'CmdOrCtrl+H',
+				click: function() {
+					callPlayerFunction('Next');
+				}
+			}
 		]
 	}
 ];
+
+function callPlayerFunction(cmd) {
+	mainWindow.webContents.send('callPlayerFunction', cmd);
+}
 
 // If OSX, add empty object to menu
 if (process.platform == 'darwin') {
@@ -179,22 +268,22 @@ if (process.env.NODE_ENV !== 'production') {
 
 settings.init({ App: 'EasyVideoPlayer' }).then(
 	(resolveData) => {
-		console.log('Settings Path = ', settings.settingFilePath);
+		log.info('Settings Path = ', settings.settingFilePath);
 		if (resolveData == null) {
 			settings.setKey({ Key: 'value', otherKey: 'otherValue' }).then(
 				(data) => {
-					console.log('Init Succsessfull First Start = ', data);
+					log.info('Init Succsessfull First Start = ', data);
 				},
 				(err) => {
-					console.log('Set Value by key error = ', err);
+					log.info('Set Value by key error = ', err);
 				}
 			);
 		} else {
-			console.log('Init Succsessfull ', resolveData);
+			log.info('Init Succsessfull ', resolveData);
 		}
 	},
 	(rejectData) => {
-		console.log('Cant Init Settings File!!! Error= ', rejectData);
+		log.info('Cant Init Settings File!!! Error= ', rejectData);
 	}
 );
 
@@ -219,7 +308,7 @@ ipcMain.handle('setKey', async (event, data) => {
 });
 
 ipcMain.handle('TestEvent', async (event, data) => {
-	console.log(data);
+	log.info(data);
 	return data;
 });
 
@@ -234,7 +323,7 @@ ipcMain.handle('playlist', async (event, data) => {
 });
 
 ipcMain.handle('saveAs', async (event, filePath) => {
-	//console.log(filePath)
+	//log.info(filePath)
 	var buffer = await fs.readFile(filePath);
 
 	return fs.stat(filePath);
@@ -246,24 +335,43 @@ const { exec, spawn } = require('child-process-async');
 ipcMain.handle('getFileInfos', async (event, filePath) => {
 	//ffprobe -hide_banner -loglevel fatal -show_error -show_format -show_streams -show_programs -show_chapters -show_private_data -print_format json
 	//-v quiet -print_format json -show_format -show_streams
-	const childInfo = await spawn(process.env.FFPROBE_PATH, [ '-v', 'quiet', '-print_format', 'json', '-show_format', '-show_streams', '-show_programs', '-show_chapters', '-show_private_data', filePath ]);
+	const childInfo = await spawn(process.env.FFPROBE_PATH, [ '-loglevel', 'fatal', '-show_error', '-print_format', 'json', '-show_format', '-show_streams', '-show_programs', '-show_chapters', '-show_private_data', '-show_metadata', filePath ]);
+
 	const childInfoOut = await childInfo;
 
-	//console.log(childInfoOut.stdout.toString());
-	// console.log(childInfoOut.stderr.toString());
-	// console.log(childInfoOut);
+	//log.info(childInfoOut.stdout.toString());
+	// log.info(childInfoOut.stderr.toString());
+	// log.info(childInfoOut);
 
 	//const childHash = await spawn(process.env.FFMPEG_PATH, [ '-i', filePath, '-map', '0:v', '-c', 'copy', '-f', 'hash', '-hash', 'md5', '-' ]);
 	//const childHashOut = await childHash;
 	//var outHashString = childHashOut.stdout.toString().normalize();
 	//outHashString = outHashString.split('=')[1];
-	//console.log(outHashString);
-	//console.log(childHashOut.stderr.toString());
-	//console.log(childHashOut);
+	//log.info(outHashString);
+	//log.info(childHashOut.stderr.toString());
+	console.log(childInfoOut.stdout.toString());
+
+	//const childInfoNOJSON = await spawn(process.env.FFPROBE_PATH, [ '-loglevel', 'verbose', '-print_format', 'json', '-f', '-show_streams', filePath ]);
+	//const childInfoOutNOJSON = await childInfoNOJSON;
+	//console.log(childInfoOutNOJSON.stdout.toString());
+
+	// Read song.mp3 metadata
+	ffmetadata.read(filePath, function(err, data) {
+		if (err) console.error('Error reading metadata', err);
+		else console.log(data);
+	});
+
+	fs.writeFile('./testoutputlogfile.txt', childInfoOut.stdout.toString(), (err) => {
+		if (err) {
+			log.info(err);
+		} else {
+			log.info('The file has been saved!');
+		}
+	});
 
 	var returnData = JSON.parse(childInfoOut.stdout.toString());
 	//returnData.hash = childHashOut.stdout.toString();
-	console.log(returnData);
+	log.info(returnData);
 	return returnData;
 });
 
@@ -272,34 +380,34 @@ ipcMain.handle('getFileInfos', async (event, filePath) => {
 //ffmpeg -i input.mp4 -map 0 -c copy -f streamhash -hash md5 -
 
 ipcMain.handle('openFiles', async (event, filePath) => {
-	console.log('openFiles');
+	log.info('openFiles');
 	const options = {
 		defaultPath: filePath,
 		properties: [ 'openFile', 'multiSelections' ]
 	};
 	const Files = await dialog.showOpenDialog(options);
-	console.log(Files);
+	log.info(Files);
 	return Files;
 });
 
 ipcMain.handle('openDialog', async (event, filePath) => {
-	console.log('open dialog');
+	log.info('open dialog');
 	const options = {
 		defaultPath: filePath
 	};
 	const savePath = await dialog.showSaveDialog(null, options);
-	console.log(savePath);
+	log.info(savePath);
 	return savePath;
 });
 
 ipcMain.handle('openDirDialog', async (event, filePath) => {
-	console.log('open dialog');
+	log.info('open dialog');
 	const options = {
 		defaultPath: filePath,
 		properties: [ 'openDirectory' ]
 	};
 	const savePath = await dialog.showOpenDialog(null, options);
-	console.log(savePath);
+	log.info(savePath);
 	return savePath;
 });
 
@@ -308,7 +416,7 @@ ipcMain.handle('saveDialog', async (event, filePath) => {
 		defaultPath: filePath
 	};
 	const savePath = await dialog.showSaveDialog(null, options);
-	console.log(savePath);
+	log.info(savePath);
 	return savePath;
 });
 
@@ -350,26 +458,26 @@ ipcMain.handle('OpenExportVideoWindow', async (event, filePath) => {
 });
 
 ipcMain.handle('convertFile', async (event, data, cb) => {
-	console.log('convertFile');
+	log.info('convertFile');
 	var d = await convertFile(data);
 	return d;
 });
 
 ipcMain.handle('TestExportSize', async (event, data, cb) => {
-	console.log('convertFile');
+	log.info('convertFile');
 	var d = await convertFile(data);
 	var s = await fs.stat(data.outputFile);
 	return s;
 });
 
 ipcMain.handle('openFileInBrowserAndHighlight', async (event, data) => {
-	console.log('openFileInBrowserAndHighlight');
+	log.info('openFileInBrowserAndHighlight');
 	exec(`explorer /select, ${data}`).catch((error) => {});
 	return;
 });
 
 ipcMain.handle('deleteFromDrive', async (event, data) => {
-	console.log('deleteFromDrive');
+	log.info('deleteFromDrive');
 	var ret = await fs.unlink(data);
 	return ret;
 });
@@ -378,7 +486,7 @@ ipcMain.handle('deleteFromDrive', async (event, data) => {
 var i = 0;
 function testFunction(params) {
 	i++;
-	console.log('You Click in Menu the Test Button i = ', i);
+	log.info('You Click in Menu the Test Button i = ', i);
 	mainWindow.send('TestEvent', i);
 }
 
@@ -399,20 +507,26 @@ async function convertFile(data) {
 		var duration = 0;
 		//const child = await spawn(process.env.FFPROBE_PATH, ['-i', 'inputFile', '-ss', 'StartTime', '-to', '-EndTime', '-c:v copy -c:a', 'outputFile']);
 
-		console.log('Input data = ', data);
+		log.info('Input data = ', data);
 
 		//const child = await spawn(process.env.FFMPEG_PATH, ['-i', inputFile, '-ss', startTime, '-to', endTime, '-c:v', 'copy', '-c:a', outputFile]);
 		//const { stdout, stderr } = await child;
 
-		//console.log('stdout = ', stdout.toString());
-		//console.log('stderr = ', stderr.toString());
+		//log.info('stdout = ', stdout.toString());
+		//log.info('stderr = ', stderr.toString());
 		//return stdout.toString()
 
 		//make sure you set the correct path to your video file
-		var proc = new ffmpeg({ source: data.inputFile, nolog: true });
+		var proc = new ffmpeg({ source: data.inputFile, nolog: false });
 
 		// data = { inputFile: '', startTime: 2, duration: 10, outputFile: outputFile, fps: 60, format: 'mov', quality: '50%' }
-
+		//	proc.addOptions([ '-map 0:a?', '-map 0:v? copy ', '-map 0:s? copy ', '-map 0:d? copy ', '-map 0:t? copy ' ]);
+		proc.addOptions([ '-map 0' ]);
+		proc.addOptions([ '-movflags use_metadata_tags' ]);
+		//proc.addOptions([ '-map_metadata 0' ]);
+		//proc.addOptions([ '-metadata:s:a:0 title=One' ]);
+		proc.addOptions([ '-v verbose' ]);
+		//proc.addOptions([ '-c:a copy' ]);
 		// Set Quality
 		if (typeof data.quality != 'undefined') {
 			proc.withSize(`${data.quality}%`);
@@ -437,9 +551,9 @@ async function convertFile(data) {
 
 		//Set setDuration
 		if (typeof data.endTime != 'undefined') {
-			console.log('data.endTime  = ', data.endTime);
-			console.log(' data.startTime = ', data.startTime);
-			console.log('data.endTime - data.startTime = ', data.endTime - data.startTime);
+			log.info('data.endTime  = ', data.endTime);
+			log.info(' data.startTime = ', data.startTime);
+			log.info('data.endTime - data.startTime = ', data.endTime - data.startTime);
 			//data.duration = data.endTime - data.startTime;
 			proc.setDuration(data.endTime - data.startTime);
 			duration = data.endTime - data.startTime;
@@ -468,13 +582,27 @@ async function convertFile(data) {
 		} else {
 		}
 
+		if (data.format != 'mp3' && data.format != 'wav' && data.format != 'gif') {
+			if (typeof data.videoCodec != 'undefined') {
+				proc.videoCodec(data.videoCodec);
+			} else {
+				proc.withVideoCodec('libx264');
+			}
+		}
+
+		if (typeof data.compression != 'undefined') {
+			proc.addOptions([ '-crf ' + data.compression.rate, '-preset ' + data.compression.preset ]);
+		} else {
+			proc.addOptions([ '-crf 30', '-preset medium' ]);
+		}
+
 		proc.on('start', function(commandLine) {
-			console.log('Spawned FFmpeg with command: ' + commandLine);
+			log.info('Spawned FFmpeg with command: ' + commandLine);
 			mainWindow.send('StartEvent', commandLine);
 		});
 
 		proc.on('error', function(err) {
-			console.log('error: ', +err);
+			log.info('error: ', err);
 
 			resolve({ msg: 'Error!', data: data, err: err });
 			removeProc(pid);
@@ -482,7 +610,7 @@ async function convertFile(data) {
 
 		proc.on('end', function(err) {
 			if (!err) {
-				console.log('conversion Done');
+				log.info('conversion Done');
 				resolve({ msg: 'Finished', data: data, err: false });
 			}
 			removeProc(pid);
@@ -504,7 +632,7 @@ async function convertFile(data) {
 			// - 'percent': an estimation of the progress
 			if (duration == 0) {
 				duration = proc._ffprobeData.format.duration;
-				console.log(proc._ffprobeData.format.duration);
+				log.info(proc._ffprobeData.format.duration);
 			}
 
 			var currentSek = progress.frames / data.fps;

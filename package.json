@@ -1,6 +1,6 @@
 {
 	"name": "VideoTools",
-	"version": "0.0.2",
+	"version": "0.0.1-alpha",
 	"description": "",
 	"main": "app.js",
 	"scripts": {
@@ -15,7 +15,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/auupelec/VideoPlayer/VideoPlayer.git"
+		"url": "git+https://github.com/steffenreimann/VideoPlayer.git"
 	},
 	"author": "Steffen Reimann",
 	"license": "ISC",
@@ -25,6 +25,7 @@
 		"electron-log": "^4.4.1",
 		"electron-updater": "^4.3.9",
 		"exif-parser": "^0.1.12",
+		"ffmetadata": "^1.7.0",
 		"ffmpeg-ffprobe-static": "^4.3.1-rc.6",
 		"ffmpeg-static": "^4.4.0",
 		"fluent-ffmpeg": "^2.1.2",
@@ -39,30 +40,62 @@
 		"sass": "^1.37.5"
 	},
 	"bugs": {
-		"url": "https://github.com/auupelec/VideoPlayer/issues"
+		"url": "https://github.com/steffenreimann/VideoPlayer/issues"
 	},
-	"homepage": "https://github.com/auupelec/VideoPlayer#readme",
+	"homepage": "https://github.com/steffenreimann/VideoPlayer#readme",
 	"build": {
-		"appId": "com.github.auupelec.VideoPlayer",
+		"appId": "com.github.steffenreimann.VideoPlayer",
 		"productName": "VideoTools",
+		"generateUpdatesFilesForAllChannels": true,
 		"publish": [
 			{
 				"provider": "github",
-				"owner": "auupelec",
+				"owner": "steffenreimann",
 				"repo": "VideoPlayer",
 				"private": "true",
-				"token": "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"
+				"releaseType": "prerelease",
+				"vPrefixedTagName": false
 			}
 		],
 		"win": {
-			"publish": [ "github" ],
+			"publish": [
+				"github"
+			],
 			"target": [
 				{
 					"target": "nsis",
-					"arch": [ "x64", "ia32" ]
+					"arch": [
+						"x64",
+						"ia32"
+					]
 				}
 			],
 			"icon": "./assets/icons/win/videotools.ico"
-		}
+		},
+		"mac": {
+			"category": "public.app-category.productivity",
+			"files": [
+				"!node_modules/ffmpeg-static/bin/win${/*}",
+				"!node_modules/ffmpeg-static/bin/linux${/*}",
+				"!node_modules/ffprobe-static/bin/win${/*}",
+				"!node_modules/ffprobe-static/bin/linux${/*}"
+			]
+		},
+		"asarUnpack": [
+			"**/node_modules/ffmpeg-ffprobe-static/*",
+			"**/node_modules/ffmpeg-static/*"
+		],
+		"files": [
+			"**/*",
+			"!release-builds/*",
+			"!dist/",
+			"!assets/",
+			"node_modules/ffmpeg-static/bin/${os}/${arch}/ffmpeg",
+			"node_modules/ffmpeg-static/index.js",
+			"node_modules/ffmpeg-static/package.json",
+			"node_modules/ffprobe-static/bin/${os}/${arch}/ffmpeg",
+			"node_modules/ffprobe-static/index.js",
+			"node_modules/ffprobe-static/package.json"
+		]
 	}
 }

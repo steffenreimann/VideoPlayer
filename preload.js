@@ -5,14 +5,20 @@ var stringMath = require('string-math');
 var url = require('url');
 const fs = require('fs');
 
-ipcRenderer.on('message', function(event, text) {
-	console.log('Auto update message = ', text);
+ipcRenderer.on('message', function(event, obj) {
+	console.log('message = ', obj);
+	if (obj.type === 'update') {
+		window.updateStatus = obj.status;
+		handelUpdate(obj);
+	}
 });
+
+window.updateStatus = null;
 
 window.playlist = [];
 window.currentPlaylistIndex = 0;
 window.PlaylistLooping = true;
-var isNavOpen = false;
+var isNavOpen = true;
 window.videoelement = null;
 window.currentSpeed = 1;
 var currentSpeedIndex = 4;
@@ -21,7 +27,7 @@ var waitToHideControls = 2500;
 var mosueMoveTimer = null;
 var isMouseOverControls = false;
 var isShown = true;
-var currentVideoInfos = {};
+window.currentVideoInfos = {};
 var currentExportPath = '';
 var EndPoint = 0;
 var exportDuration = 0;
@@ -89,6 +95,44 @@ document.addEventListener('drop', (event) => {
 		}
 	}
 	render();
+});
+
+ipcRenderer.on('callPlayerFunction', function(event, data) {
+	console.log('callPlayerFunction ', data);
+
+	switch (data) {
+		case 'Before':
+			window.previous();
+			break;
+		case 'TogglePlay':
+			window.togglePlay();
+			break;
+		case 'Next':
+			window.next();
+			break;
+		case 'Slower':
+			window.LowerSpeed();
+			break;
+		case 'Faster':
+			window.HigherSpeed();
+			break;
+		case 'ToggleMute':
+			break;
+		case 'ToggleFullscreen':
+			window.toggleFullscreen('FullscreenContainer');
+			break;
+		case 'openExport':
+			window.openModal('exportModal', window.exportModalFunction);
+			break;
+		case 'exportFrame':
+			window.saveFrame();
+			break;
+
+		default:
+			break;
+	}
+
+	//document.getElementById('testFuncCall').innerText = `Button was pressed ${data} times`;
 });
 
 document.addEventListener('dragover', (e) => {
@@ -181,7 +225,7 @@ window.playvideoid = async function(videoid) {
 	window.videoelement.src = window.playlist[videoid];
 	console.log('window.videoelement.src = ', window.videoelement.src);
 	window.videoelement.play;
-	currentVideoInfos = await window.getFileInfos();
+	window.currentVideoInfos = await window.getFileInfos();
 	render();
 };
 
@@ -240,8 +284,38 @@ window.onload = function() {
 	window.init();
 };
 
-window.init = function() {
-	console.log('Init Function v0.0.2');
+window.dai = async function() {
+	const result = await ipcRenderer.invoke('downloadAndApplyUpdate');
+	console.log(result);
+};
+function handelUpdate(params) {
+	console.log('handelUpdate', params);
+
+	if (params.status == 'error') {
+		console.log('update error');
+		document.getElementById('startLoadingScreen').classList.add('hide');
+	}
+	if (params.status == 'update-not-available') {
+		console.log('update-check-finished!');
+		document.getElementById('startLoadingScreen').classList.add('hide');
+	}
+	if (params.status == 'update-available') {
+		console.log('update-check-finished!');
+		document.getElementById('startLoadingScreen').classList.remove('hide');
+	}
+	if (params.status == 'update-downloaded') {
+		console.log('update-check-finished!');
+		//document.getElementById('startLoadingScreen').classList.add('hide');
+	}
+	if (params.status == 'download-progress') {
+		changeProgress('updateDownloadProgress', params.progress.percent);
+	}
+}
+window.init = async function() {
+	const result = await ipcRenderer.invoke('checking-update-status');
+	handelUpdate(result);
+	console.log(result);
+	console.log('Init Function v0.0.1 alpha');
 	window.videoelement = document.getElementsByTagName('video').videoplayer;
 	var PlayPauseBTN = document.getElementById('PlayPauseBTN');
 	var controls = document.getElementById('controls');
@@ -891,8 +965,8 @@ window.previousFrame = function(params) {
 
 var canvas = document.createElement('canvas');
 function getFrameImg(params) {
-	canvas.width = currentVideoInfos.streams[0].width;
-	canvas.height = currentVideoInfos.streams[0].height;
+	canvas.width = window.currentVideoInfos.streams[0].width;
+	canvas.height = window.currentVideoInfos.streams[0].height;
 	var ctx = canvas.getContext('2d');
 	ctx.drawImage(window.videoelement, 0, 0, canvas.width, canvas.height);
 	const url = canvas.toDataURL('image/png', 1);
@@ -901,7 +975,7 @@ function getFrameImg(params) {
 }
 
 function calcSekPerFrame() {
-	var fps = stringMath(currentVideoInfos.streams[0].r_frame_rate);
+	var fps = stringMath(window.currentVideoInfos.streams[0].r_frame_rate);
 	var currentFrame = Math.round(fps * window.videoelement.currentTime);
 	var frames = Math.round(fps * window.videoelement.duration);
 	var sekPerFrame = window.videoelement.duration / frames;
@@ -914,7 +988,7 @@ function calcSekPerFrame() {
 }
 
 function getCurrentFrameIndex() {
-	var fps = stringMath(currentVideoInfos.streams[0].r_frame_rate);
+	var fps = stringMath(window.currentVideoInfos.streams[0].r_frame_rate);
 	var currentFrame = Math.round(fps * window.videoelement.currentTime);
 	return currentFrame;
 }
@@ -962,12 +1036,14 @@ window.playvideo = async function(video) {
 	} else {
 		window.videoelement.src = video;
 		window.videoelement.play;
+		console.log('Video Tracks = ', window.videoelement.videoTracks);
+		console.log('Audio Tracks = ', window.videoelement.audioTracks);
 		wavesurfer.empty();
 		wavesurfer.clearRegions();
 		wavesurfer.load(window.videoelement);
 		document.getElementById('img-cover').style.zIndex = '0';
 		window.videoelement.style.zIndex = '1';
-		currentVideoInfos = await window.getFileInfos();
+		window.currentVideoInfos = await window.getFileInfos();
 		render();
 	}
 };
@@ -1014,7 +1090,7 @@ window.closeModal = async function(elementid, closeModalFunction) {
 
 window.exportModalFunction = async function(id) {
 	console.log('export Modal Function = ', id);
-	console.log('currentVideoInfos = ', currentVideoInfos);
+	console.log('window.currentVideoInfos = ', window.currentVideoInfos);
 	var VideoExport = {
 		dirPath: '',
 		exportList: []
@@ -1031,8 +1107,8 @@ window.exportModalFunction = async function(id) {
 
 	document.getElementById('videoexportnameInputField').value = path.parse(window.playlist[window.currentPlaylistIndex]).name;
 
-	document.getElementById('videoexport-bitrate').value = (currentVideoInfos.format.bit_rate / 1024).toFixed();
-	document.getElementById('videoexport-fps').value = stringMath(currentVideoInfos.streams[0].r_frame_rate);
+	document.getElementById('videoexport-bitrate').value = (window.currentVideoInfos.format.bit_rate / 1024).toFixed();
+	document.getElementById('videoexport-fps').value = stringMath(window.currentVideoInfos.streams[0].r_frame_rate);
 
 	return;
 };
@@ -1040,8 +1116,8 @@ window.exportModalFunction = async function(id) {
 window.renderExportRegion = async function(id) {
 	console.log('render Export Region = ', id);
 
-	var fps = stringMath(currentVideoInfos.streams[0].r_frame_rate);
-	var bitrate = (currentVideoInfos.format.bit_rate / 1024).toFixed();
+	var fps = stringMath(window.currentVideoInfos.streams[0].r_frame_rate);
+	var bitrate = (window.currentVideoInfos.format.bit_rate / 1024).toFixed();
 	document.getElementById('regions').innerHTML = '';
 	if (Object.keys(wavesurfer.regions.list).length > 0) {
 		Object.keys(wavesurfer.regions.list).forEach(function(key) {
@@ -1179,6 +1255,9 @@ window.exportVideo = async function() {
 	data.fps = document.getElementById('videoexport-fps').value;
 	data.quality = document.getElementById('videoexport-quality').value;
 	data.videoname = document.getElementById('videoexportnameInputField').value;
+	data.videoCodec = document.getElementById('videoexport-videoCodec').value;
+	data.compression = { rate: document.getElementById('videoexport-compRate').value, preset: document.getElementById('videoexport-preset').value };
+
 	data.outputFile = path.join(currentExportPath, `${data.videoname}_fps-${data.fps}_q-${data.quality}_vb-${data.videoBitrate}.${data.format}`);
 
 	console.log(data);

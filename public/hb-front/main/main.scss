@@ -1,0 +1,37 @@
+@import 'sass/vars';
+@import 'sass/row';
+@import 'sass/utils';
+@import 'sass/forms';
+@import 'sass/animations';
+@import 'sass/modal';
+
+body {
+	margin: 0px;
+	padding: 0px;
+}
+
+/* width */
+::-webkit-scrollbar {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	z-index: -1;
+	width: 0px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+	background: #f1f1f100;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+	border-radius: 4px;
+	width: 0px;
+	background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+	background: #555;
+}

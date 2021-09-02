@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
-    <title>VideoTools Test Version 0.0.1</title>
+    <title>VideoTools Test Version 0.0.3</title>
     <!-- MDB icon -->
     <link rel="icon" href="img/videotools.ico" type="image/x-icon" />
     <!-- Font Awesome -->
@@ -17,13 +17,28 @@
     <link rel="stylesheet" href="css/custom/dist/main.css" />
 
 
-    <link rel="stylesheet" href="E:\html-framework\hb-front\main\dist\main.css" />
+    <link rel="stylesheet" href="hb-front/main/dist/main.css" />
 
 
 </head>
 
 <body>
     <div id="body">
+        <div id="startLoadingScreen" class="startLoadingScreen hide">
+
+            <div class="input c12 ">
+                <button type="button" class="ig-item dark" onclick="window.dai()">
+                    Download and Install Update
+                </button>
+            </div>
+            <div class="input c12 ">
+                <button type="button" class="ig-item dark" onclick="function(){document.getElementById('startLoadingScreen').classList.add('hide')}">
+                    Cancle
+                </button>
+            </div>
+            <div id="updateDownloadProgress" class="progress " value="0"></div>
+
+        </div>
         <div id="FullscreenContainer">
             <div id="mySidenav" class="sidenav">
 
@@ -67,6 +82,7 @@
                 <video class="video-player" id="videoplayer" onended="window.onVideoEnded()" src="">
 
                 </video>
+                <div class="videoCropContainer" id="videoCropContainer"></div>
                 <image id="img-cover" class="img-player" style="z-index: 0;" src=""></image>
 
                 <!-- Video Controls -->
@@ -186,13 +202,34 @@
                             </div>
                         </div>
 
-
                         <div class="row ">
                             <div class="ig c12">
 
-                                <div class="input c2">
+                                <div class="input c1">
                                     <label class="label-top">Bitrate kBit/s</label>
                                     <input type="text" id="videoexport-bitrate" class="ig-item dark" />
+                                </div>
+                                <div class="input c1">
+                                    <label class="label-top">Compremierung</label>
+                                    <input type="text" id="videoexport-compRate" class="ig-item dark" />
+                                </div>
+                                <div class="input c2">
+                                    <label class="label-top">Preset</label>
+                                    <div class="select ig-item dark">
+
+                                        <select id="videoexport-preset" value="medium" class="">
+                                            <option value="ultrafast">ultrafast</option>
+                                            <option value="superfast">superfast</option>
+                                            <option value="veryfast">veryfast</option>
+                                            <option value="faster">faster</option>
+                                            <option value="fast">fast</option>
+                                            <option value="medium">medium</option>
+                                            <option value="slow">slow</option>
+                                            <option value="slower">slower</option>
+                                            <option value="veryslow">veryslow but best output</option>
+
+                                        </select>
+                                    </div>
                                 </div>
                                 <div class="input c2">
                                     <label class="label-top">Quality</label>
@@ -202,7 +239,7 @@
                                     <label class="label-top">Frams per Secound</label>
                                     <input type="text" id="videoexport-fps" class="ig-item dark" />
                                 </div>
-                                <div class="input c3">
+                                <div class="input c2">
                                     <label class="label-top">Export Format</label>
                                     <div class="select ig-item dark">
 
@@ -217,7 +254,23 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="input c3 ">
+                                <div class="input c2">
+                                    <label class="label-top">Export Format</label>
+                                    <div class="select ig-item dark">
+
+                                        <select id="videoexport-videoCodec" class="">
+                                            <option value="libx264">libx265</option>
+                                            <option value="libx265">libx265</option>
+                                            <option value="mov">mov</option>
+                                            <option value="avi">avi</option>
+                                            <option value="flv">flv</option>
+                                            <option value="mp3">mp3 Audio Only</option>
+                                            <option value="wav">wav Audio Only</option>
+                                            <option value="gif">gif</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="input c2 ">
                                     <button type="button" class="ig-item dark" onclick="window.exportVideo()">
                                         Add to Export List
                                     </button>
@@ -323,7 +376,7 @@
 
 
 <script type="text/javascript" src="js/main.js"></script>
-<script type="text/javascript" src="E:\html-framework\hb-front\main\main.js"></script>
+<script type="text/javascript" src="hb-front/main/dist/main.dev.js"></script>
 <script type="text/javascript" src="js/modal.js"></script>
 
 

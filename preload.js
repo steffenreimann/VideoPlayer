@@ -1,9 +1,15 @@
 //var ipcRenderer = require('electron').ipcRenderer;
-const { dialog, ipcRenderer } = require('electron');
+const electron = require('electron');
+const { dialog, ipcRenderer, remote } = electron;
+
+console.log(remote);
+
 var path = require('path');
 var stringMath = require('string-math');
 var url = require('url');
 const fs = require('fs');
+var custom = require('easy-electron-custom-dialog');
+const fm = require('easy-nodejs-app-settings');
 
 ipcRenderer.on('message', function(event, obj) {
 	console.log('message = ', obj);
@@ -94,7 +100,7 @@ document.addEventListener('drop', (event) => {
 			window.playlist.push(f.path);
 		}
 	}
-	render();
+	renderPlaylist();
 });
 
 ipcRenderer.on('callPlayerFunction', function(event, data) {
@@ -147,6 +153,18 @@ document.addEventListener('dragenter', (event) => {
 document.addEventListener('dragleave', (event) => {
 	console.log('File has left the Drop Space');
 });
+
+window.testdia = async function() {
+	var testDia = await custom.dialog({
+		width: '500px',
+		height: '500px',
+		electron: electron,
+		htmlPath: './public/dialog.html',
+		data: { vorname: 'Test', nachname: 'Lost', select: '2', check: true }
+	});
+
+	console.log('Test Dialog return = ', testDia);
+};
 
 window.next = function() {
 	window.currentPlaylistIndex++;
@@ -226,7 +244,7 @@ window.playvideoid = async function(videoid) {
 	console.log('window.videoelement.src = ', window.videoelement.src);
 	window.videoelement.play;
 	window.currentVideoInfos = await window.getFileInfos();
-	render();
+	renderPlaylist();
 };
 
 window.removevideoid = function(videoid) {
@@ -236,15 +254,17 @@ window.removevideoid = function(videoid) {
 	if (videoid == window.currentPlaylistIndex) {
 		window.next();
 	}
-	render();
+	renderPlaylist();
 };
 
 window.clearPlaylist = function() {
 	window.playlist = [];
-	render();
+	renderPlaylist();
 };
 
-function render() {
+// Mark : Render SideNav Playlist
+
+function renderPlaylist() {
 	document.getElementById('playlist').innerHTML = '';
 	if (window.playlist.length == 0) {
 		document.getElementById('video-titel-name').innerText = 'Drag and Drop Files to Play';
@@ -277,6 +297,130 @@ function render() {
 		i++;
 	});
 }
+
+// Mark : Render SideNav Clips
+
+function renderSideNavClips() {
+	document.getElementById('clips').innerHTML = '';
+	if (wavesurfer.regions.list == 0) {
+		document.getElementById('clips').innerText = 'Make Clips!';
+		return;
+	}
+	var i = 0;
+
+	Object.keys(wavesurfer.regions.list).forEach((key) => {
+		var element = wavesurfer.regions.list[key];
+
+		console.log('element = ', element);
+		document.getElementById('clips').innerHTML += `
+        <div class="playListItem" onclick="window.playRegion('${element.id}')" onmouseleave="window.HighlightClip('${element.id}',event)" onmouseover="window.HighlightClip('${element.id}',event)">
+            <div class="text"  >
+                
+                ${element.element.title}
+            </div>
+            <div class="item" style="right: 120px;" onclick="window.setRegionMoveType('${element.id}', 'start')">
+                s
+            </div>
+			<div class="item" style="right: 100px;" onclick="window.setRegionMoveType('${element.id}', 'move')">
+				m
+			</div>
+			<div class="item" style="right: 80px;" onclick="window.setRegionMoveType('${element.id}', 'end')">
+				e
+			</div>
+
+
+			<div class="item" style="right: 60px;" onclick="window.handleMoveRegion('${element.id}', 'backward')">
+                <i aria-label="Save Frame as PNG" class="fas fa-caret-left"></i>
+            </div>
+			<div class="item" style="right: 45px;" onclick="window.handleMoveRegion('${element.id}', 'forward')">
+                <i aria-label="Save Frame as PNG" class="fas fa-caret-right"></i>
+            </div>
+			<div class="item" style="right: 20px;" onclick="window.setActiveRegion('${element.id}')">
+                <i aria-label="Save Frame as PNG" class="fas fa-highlighter"></i>
+            </div>
+			
+			
+            <div class="item" style="right: 0px;" onclick="window.removeRegionButton('${element.id}', event)">
+                <i aria-label="Save Frame as PNG" class="fas fa-times"></i>
+            </div>
+        </div>
+        `;
+		i++;
+	});
+}
+
+window.playRegion = function(regionid) {
+	console.log('playRegion = ', regionid);
+	var region = wavesurfer.regions.list[regionid];
+	region.play();
+};
+
+// Mark : Highlight Clip
+
+window.testElement = null;
+window.HighlightClip = function(regionid, event) {
+	console.log('HighlightClip');
+	//console.log('regionid = ', regionid);
+	//console.log('Region Element = ', document.querySelector(`[data-id="${regionid}"]`));
+	//console.log(event);
+	//console.log(event.type);
+	var htmlElement = document.querySelector(`[data-id="${regionid}"]`);
+	window.testElement = htmlElement;
+	console.log('Region Element = ', htmlElement);
+	if (event.type == 'mouseleave') {
+		//console.log('mouseleave');
+		//console.log('mouseover', htmlElement.style.backgroundColor);
+		htmlElement.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+		console.log('mouseleave', htmlElement.style.backgroundColor);
+	} else {
+		//console.log('mouseover', htmlElement.style.backgroundColor);
+		htmlElement.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
+		console.log('mouseover', htmlElement.style.backgroundColor);
+	}
+};
+
+// Mark : handle Move Region
+
+window.handleMoveRegion = function(regionid, way) {
+	console.log('handleMoveRegion');
+	console.log('regionid = ', regionid);
+
+	var frameTime = calcSekPerFrame();
+	var region = wavesurfer.regions.list[regionid];
+	if (region.moveType == 'start' || region.moveType == 'end') {
+		if (way == 'forward') {
+			window.setRegionParams(regionid, { [region.moveType]: wavesurfer.regions.list[regionid][region.moveType] + frameTime });
+		} else if (way == 'backward') {
+			window.setRegionParams(regionid, { [region.moveType]: wavesurfer.regions.list[regionid][region.moveType] - frameTime });
+		}
+	} else if (region.moveType == 'move') {
+		if (way == 'forward') {
+			window.setRegionParams(regionid, { start: wavesurfer.regions.list[regionid].start + frameTime, end: wavesurfer.regions.list[regionid].end + frameTime });
+		} else if (way == 'backward') {
+			window.setRegionParams(regionid, { start: wavesurfer.regions.list[regionid].start - frameTime, end: wavesurfer.regions.list[regionid].end - frameTime });
+		}
+	}
+};
+
+window.setRegionMoveType = function(regionid, type) {
+	console.log('setRegionMoveType');
+	console.log('regionid = ', regionid);
+	console.log('type = ', type);
+	console.log('wavesurfer.regions.list[regionid] = ', wavesurfer.regions.list[regionid]);
+	wavesurfer.regions.list[regionid].moveType = type;
+};
+
+window.showSideNavContainer = function(containerName) {
+	var containers = document.getElementsByClassName('sideNavBody');
+	//console.log('containers = ', containers);
+	for (var i = 0; i < containers.length; i++) {
+		//containers[i].style.display = 'none';
+		containers[i].classList.add('hide');
+	}
+
+	//document.getElementById(containerName).style.display = 'block !important';
+	document.getElementById(containerName).classList.remove('hide');
+};
 
 var slider;
 
@@ -311,6 +455,14 @@ function handelUpdate(params) {
 		changeProgress('updateDownloadProgress', params.progress.percent);
 	}
 }
+
+window.updateWindow = function(show) {
+	if (show) {
+		document.getElementById('startLoadingScreen').classList.remove('hide');
+	} else {
+		document.getElementById('startLoadingScreen').classList.add('hide');
+	}
+};
 window.init = async function() {
 	const result = await ipcRenderer.invoke('checking-update-status');
 	handelUpdate(result);
@@ -407,6 +559,7 @@ window.init = async function() {
 		MouseDown = false;
 	});
 
+	// Mark : Wavesurfer Init
 	wavesurfer = WaveSurfer.create({
 		container: document.querySelector('#waveform'),
 		waveColor: '#cecece',
@@ -422,7 +575,7 @@ window.init = async function() {
 		forceDecode: true,
 		plugins: [
 			WaveSurfer.regions.create({
-				regionsMinLength: 0.1,
+				regionsMinLength: 0,
 				regions: [],
 				dragSelection: {
 					slop: 5
@@ -496,10 +649,14 @@ window.init = async function() {
 	});
 
 	wavesurfer.on('region-click', function(region, e, d) {
-		e.stopPropagation();
+		//e.stopPropagation();
+		console.log('Clip Click');
+		console.log('region = ', region);
+		//console.log('e = ', e);
+		console.log('Region Id = ', region.id);
 
-		currentActiveRegion = region;
-
+		//currentActiveRegion = region;
+		window.setActiveRegion(region);
 		if (e.ctrlKey) {
 			e.shiftKey ? region.playLoop() : region.play();
 		} else {
@@ -517,33 +674,50 @@ window.init = async function() {
 	});
 
 	wavesurfer.on('region-created', function(region) {
+		console.log('region-created', region);
 		window.StoreRegionEventListener();
 		saveRegions();
+		//window.setRegionMoveType(region.id, 'move');
 	});
 
-	wavesurfer.on('region-update-end', saveRegions);
-	wavesurfer.on('region-updated', (region) => {
-		currentActiveRegion = region;
+	wavesurfer.on('region-update-end', (region) => {
+		console.log('region-update-end', region);
+		renderSideNavClips();
+		saveRegions();
 
-		if (hasChanged(region.end, localStore.regions[region.id].end) && !hasChanged(region.start, localStore.regions[region.id].start)) {
-			console.log('region end has changed !');
-			window.videoelement.currentTime = region.end;
-			CurserToMove = {
-				id: region.id,
-				type: 'end'
-			};
-		} else if (hasChanged(region.start, localStore.regions[region.id].start) && !hasChanged(region.end, localStore.regions[region.id].end)) {
-			console.log('region start has changed !');
-			window.videoelement.currentTime = region.start;
-			CurserToMove = {
-				id: region.id,
-				type: 'start'
-			};
+		if (typeof region.init == 'undefined') {
+			region.init = true;
+			window.setRegionMoveType(region.id, 'move');
+			//console.log('Region Created = ', wavesurfer.regions);
+		}
+	});
+	wavesurfer.on('region-updated', (region) => {
+		//currentActiveRegion = region;
+		window.setActiveRegion(region);
+		if (region.init) {
+			if (hasChanged(region.end, localStore.regions[region.id].end) && !hasChanged(region.start, localStore.regions[region.id].start)) {
+				console.log('region end has changed !');
+				window.videoelement.currentTime = region.end;
+				CurserToMove = {
+					id: region.id,
+					type: 'end'
+				};
+			} else if (hasChanged(region.start, localStore.regions[region.id].start) && !hasChanged(region.end, localStore.regions[region.id].end)) {
+				console.log('region start has changed !');
+				window.videoelement.currentTime = region.start;
+				CurserToMove = {
+					id: region.id,
+					type: 'start'
+				};
+			}
 		}
 
 		//saveRegions();
 	});
-	wavesurfer.on('region-removed', saveRegions);
+	wavesurfer.on('region-removed', () => {
+		renderSideNavClips();
+		saveRegions();
+	});
 
 	wavesurfer.on('region-in', () => {});
 	wavesurfer.on('region-out', () => {});
@@ -601,7 +775,101 @@ window.init = async function() {
 		clearInterval(volInterval);
 	});
 
+	initSettings();
+
 	window.showControls();
+};
+
+// MARK: Init Settings
+
+var settings;
+async function initSettings() {
+	settings = new fm.File({
+		appname: 'VideoTools', // required
+		file: 'settings.json', // required
+		data: {
+			defaultExport: {
+				comp: 23,
+				preset: 'medium',
+				format: 'mp4',
+				codec: 'libx264'
+			}
+		},
+		doLogging: true
+	});
+
+	await settings.init();
+	console.log('DataStore File Init');
+	console.log(settings.data);
+}
+
+// Mark: set Active Region
+
+window.setActiveRegion = function(region) {
+	//console.log('setActiveRegion typeof Region = ', typeof region);
+	//console.log('setActiveRegion Region = ', region);
+
+	if (typeof region != 'object') {
+		//console.log('Set Activ Region Argument is not an Object.');
+		//console.log('Try to get the right Object. Region ID = ', region);
+		region = wavesurfer.regions.list[region];
+		//console.log('New Region Object = ', region);
+	}
+
+	currentActiveRegion = region;
+	console.log('window.setActiveRegion');
+	console.log(region);
+	console.log('WaveSurfer Regions = ', wavesurfer.regions.list);
+
+	for (var key in wavesurfer.regions.list) {
+		if (wavesurfer.regions.list.hasOwnProperty(key)) {
+			var element = wavesurfer.regions.list[key];
+			console.log('key = ', key);
+			console.log('element = ', element);
+			var t = document.querySelector(`[data-id="${element.id}"]`);
+			t.style.zIndex = 2;
+
+			if (typeof t.getElementsByClassName('region-head')[0] != 'undefined') {
+				t.removeChild(t.getElementsByClassName('region-head')[0]);
+			}
+		}
+	}
+
+	var current = document.querySelector(`[data-id="${region.id}"]`);
+
+	var head = document.createElement('div');
+
+	head.classList.add('region-head');
+
+	console.log(current.offsetWidth);
+	if (current.offsetWidth > 75) {
+		head.innerHTML = ` 
+		<a class="headItem-fastExport" onclick="window.fastExport('${region.id}', event)">
+			<i class="fas fa-file-export"></i> 
+		</a>
+		<div class="headItem-text">${region.element.title}</div>
+		<a class="headItem-removeRegion" onclick="window.removeRegionButton('${region.id}', event)">
+			<i class="fas fa-times"></i> 
+		</a>`;
+	} else if (current.offsetWidth > 40) {
+		head.innerHTML = ` 
+		<a class="headItem-fastExport" onclick="window.fastExport('${region.id}', event)">
+			<i class="fas fa-file-export"></i> 
+		</a>
+		<a class="headItem-removeRegion" onclick="window.removeRegionButton('${region.id}', event)">
+			<i class="fas fa-times"></i> 
+		</a>`;
+	} else if (current.offsetWidth > 15) {
+		head.innerHTML = ` 
+		<a class="headItem-fastExport" onclick="window.fastExport('${region.id}', event)">
+			<i class="fas fa-file-export"></i> 
+		</a>`;
+	}
+
+	current.style.zIndex = 3;
+	current.appendChild(head);
+	console.log(head);
+	//current.style = 'z-index: 3';
 };
 
 function setExportButtonText() {
@@ -659,6 +927,8 @@ function hasChanged(a, b) {
 	return false;
 }
 
+// Mark : Set Region Parameter
+
 //setRegionParams(id, { 'start': 0, 'end': 0 })
 /**
  *  Set Region Parameters
@@ -667,7 +937,7 @@ function hasChanged(a, b) {
  */
 window.setRegionParams = function(regionid, params) {
 	window.wavesurfer = wavesurfer;
-	regionid = currentActiveRegion.id;
+	//regionid = currentActiveRegion.id;
 	console.log('setRegionParams = ', regionid, params);
 
 	var localRegion = wavesurfer.regions.list[regionid];
@@ -688,7 +958,7 @@ window.setRegionParams = function(regionid, params) {
 		}
 
 		saveRegions();
-		//wavesurfer.Region.render()
+		//wavesurfer.Region.renderPlaylist()
 	});
 };
 
@@ -1030,7 +1300,7 @@ window.playvideo = async function(video) {
 		window.videoelement.src = '';
 		document.getElementById('img-cover').style.zIndex = '1';
 		window.videoelement.style.zIndex = '0';
-		render();
+		renderPlaylist();
 		await delay(5000);
 		window.next();
 	} else {
@@ -1044,8 +1314,22 @@ window.playvideo = async function(video) {
 		document.getElementById('img-cover').style.zIndex = '0';
 		window.videoelement.style.zIndex = '1';
 		window.currentVideoInfos = await window.getFileInfos();
-		render();
+		console.log('wavesurfer.regions = ', wavesurfer.regions);
+		renderPlaylist();
+		renderFileInfos();
 	}
+};
+// Mark : Render File Infos
+function renderFileInfos() {
+	console.log('renderFileInfos', window.currentVideoInfos);
+	for (var key in window.currentVideoInfos.regions) {
+		//var element = window.currentVideoInfos.regions[key];
+		window.addRegion(window.currentVideoInfos.regions[key]);
+	}
+}
+
+window.addRegion = function() {
+	wavesurfer.addRegion({ start: window.currentVideoInfos.regions.start, end: window.currentVideoInfos.regions.end });
 };
 
 window.checkFileType = function(file) {
@@ -1089,29 +1373,35 @@ window.closeModal = async function(elementid, closeModalFunction) {
 };
 
 window.exportModalFunction = async function(id) {
-	console.log('export Modal Function = ', id);
 	console.log('window.currentVideoInfos = ', window.currentVideoInfos);
-	var VideoExport = {
-		dirPath: '',
-		exportList: []
-	};
+	if (Object.keys(window.currentVideoInfos).length != 0) {
+		console.log('export Modal Function = ', id);
+		console.log('Why ');
+		//console.log('window.currentVideoInfos = ', window.currentVideoInfos);
+		var VideoExport = {
+			dirPath: '',
+			exportList: []
+		};
 
-	//console.log(wavesurfer.regions.list);
-	//console.log(Object.keys(wavesurfer.regions.list).length);
-	//window.renderExportRegion(id);
-	window.renderExportRegion(id);
-	console.log(path.parse(window.playlist[window.currentPlaylistIndex]));
+		//console.log(wavesurfer.regions.list);
+		//console.log(Object.keys(wavesurfer.regions.list).length);
+		//window.renderExportRegion(id);
+		window.renderExportRegion(id);
+		console.log(path.parse(window.playlist[window.currentPlaylistIndex]));
 
-	document.getElementById('videoexportdirpathInputField').value = path.parse(window.playlist[window.currentPlaylistIndex]).dir;
-	currentExportPath = path.parse(window.playlist[window.currentPlaylistIndex]).dir;
+		document.getElementById('videoexportdirpathInputField').value = path.parse(window.playlist[window.currentPlaylistIndex]).dir;
+		currentExportPath = path.parse(window.playlist[window.currentPlaylistIndex]).dir;
 
-	document.getElementById('videoexportnameInputField').value = path.parse(window.playlist[window.currentPlaylistIndex]).name;
+		document.getElementById('videoexportnameInputField').value = path.parse(window.playlist[window.currentPlaylistIndex]).name;
 
-	document.getElementById('videoexport-bitrate').value = (window.currentVideoInfos.format.bit_rate / 1024).toFixed();
-	document.getElementById('videoexport-fps').value = stringMath(window.currentVideoInfos.streams[0].r_frame_rate);
+		document.getElementById('videoexport-bitrate').value = (window.currentVideoInfos.format.bit_rate / 1024).toFixed();
+		document.getElementById('videoexport-fps').value = stringMath(window.currentVideoInfos.streams[0].r_frame_rate);
+	}
 
 	return;
 };
+
+// Mark: Render Export Region
 
 window.renderExportRegion = async function(id) {
 	console.log('render Export Region = ', id);
@@ -1123,17 +1413,40 @@ window.renderExportRegion = async function(id) {
 		Object.keys(wavesurfer.regions.list).forEach(function(key) {
 			console.log('key = ', key);
 			var tempHTML = `
+			
 			<div class="row ">
 							
                             <div class="ig c12" >
-								<div class="input c2">
+								<div class="input c1">
 									<div class="region ig-item dark" id="${wavesurfer.regions.list[key].id}">
 										<span class="region-time">${wavesurfer.regions.list[key].start.toFixed()} - ${wavesurfer.regions.list[key].end.toFixed()}</span>
 									</div>
 								</div>
                                 <div class="input c1">
-                                    <label class="label-top">Bitrate kBit/s</label>
+                                    <label class="label-top">Bitrate</label>
                                     <input type="text" id="videoexport-bitrate-${key}" class="ig-item dark" value="${bitrate}" />
+                                </div>
+								<div class="input c1">
+                                    <label class="label-top"></label>
+                                    <input type="text" id="videoexport-compRate-${key}" class="ig-item dark" value="23" />
+                                </div>
+                                <div class="input c1">
+                                    <label class="label-top">Preset</label>
+                                    <div class="select ig-item dark">
+
+                                        <select id="videoexport-preset-${key}" value="medium" class="">
+                                            <option value="ultrafast">ultrafast</option>
+                                            <option value="superfast">superfast</option>
+                                            <option value="veryfast">veryfast</option>
+                                            <option value="faster">faster</option>
+                                            <option value="fast">fast</option>
+                                            <option value="medium">medium</option>
+                                            <option value="slow">slow</option>
+                                            <option value="slower">slower</option>
+                                            <option value="veryslow">veryslow</option>
+
+                                        </select>
+                                    </div>
                                 </div>
                                 <div class="input c1">
                                     <label class="label-top">Quality </label>
@@ -1143,7 +1456,7 @@ window.renderExportRegion = async function(id) {
                                     <label class="label-top">fps</label>
                                     <input type="text" id="videoexport-fps-${key}" class="ig-item dark" value="${fps}" />
                                 </div>
-                                <div class="input c2">
+                                <div class="input c1">
                                     <div class="select ig-item dark">
                                         <select id="videoexport-format-${key}" class="">
                                             <option value="mp4">mp4</option>
@@ -1156,8 +1469,17 @@ window.renderExportRegion = async function(id) {
                                         </select>
                                     </div>
                                 </div>
-								<div class="input c4">
-                                    <button type="button" onclick="window.exportClip('${key}')" class="ig-item dark">Add to Export List</button>
+								<div class="input c1">
+                                    <label class="label-top">Codec</label>
+                                    <div class="select ig-item dark">
+                                        <select id="videoexport-videoCodec-${key}" class="">
+                                            <option value="libx264">libx264</option>
+                                            <option value="libx265">libx265</option>
+                                        </select>
+                                    </div>
+                                </div>
+								<div class="input c3">
+                                    <button type="button" onclick="window.exportClip('${key}')" class="ig-item dark">Export</button>
                                 </div>
 								<div class="input c1">
                                     <button type="button" onclick="window.removeRegion('${wavesurfer.regions.list[key].id}')" class="ig-item dark">X</button>
@@ -1168,18 +1490,41 @@ window.renderExportRegion = async function(id) {
 			document.getElementById('regions').innerHTML += tempHTML;
 		});
 	} else {
+		var tempHTML = `
+		<div class="input c12">
+			<div class="region ig-item dark" id="">
+				<span class="">No Clips to Export</span>
+			</div>
+		</div>`;
+		document.getElementById('regions').innerHTML += tempHTML;
 	}
 	inithb();
 };
 
+// MARK: Settings Dialog Function
+
 window.SettingsModalFunction = async function(id) {
 	console.log('Settings Modal Function = ', id);
-	window.setLoadingSpinnerText('Loading...');
+	var settingsDialog = await custom.dialog({
+		width: '500px',
+		height: '500px',
+		electron: electron,
+		htmlPath: './public/settings.html',
+		closeOnSave: true,
+		closeOnAccept: false,
+		data: function() {
+			return settings.data.defaultExport;
+		},
+		cb: function(data) {
+			if (!data.canceled) {
+				settings.setKey({ defaultExport: data.data });
+			}
+		}
+	});
 
-	//await delay(5000);
-	window.setLoadingSpinnerText('Finished...');
-	//await delay(300);
-	return;
+	//settings.setKey({ defaultExport: settingsDialog.data });
+
+	console.log('settings Dialog return = ', settingsDialog);
 };
 
 window.ShowLoadingSpinner = function(text, showSpinner) {
@@ -1224,7 +1569,7 @@ window.openFiles = async function(params) {
 	console.log('Open Files result = ', result);
 	playlist = playlist.concat(result.filePaths);
 	//window.playvideo();
-	render();
+	renderPlaylist();
 	return result;
 };
 
@@ -1285,7 +1630,11 @@ window.exportClip = async function(regionID) {
 	data.videoBitrate = document.getElementById('videoexport-bitrate-' + regionID).value;
 	data.fps = document.getElementById('videoexport-fps-' + regionID).value;
 	data.quality = document.getElementById('videoexport-quality-' + regionID).value;
-	data.outputFile = path.join(currentExportPath, `${document.getElementById('videoexportnameInputField').value}_Clip_${start.toFixed()}-${end.toFixed()}_fps-${data.fps}_q-${data.quality}_vb-${data.videoBitrate}.${data.format}`);
+
+	data.videoCodec = document.getElementById('videoexport-videoCodec-' + regionID).value;
+	data.compression = { rate: document.getElementById('videoexport-compRate-' + regionID).value, preset: document.getElementById('videoexport-preset-' + regionID).value };
+
+	data.outputFile = path.join(currentExportPath, `${document.getElementById('videoexportnameInputField').value}_Clip_${start.toFixed()}-${end.toFixed()}_fps-${data.fps}_q-${data.quality}_vb-${data.videoBitrate}_codec-${data.videoCodec}_compRate-${data.compression.rate}_compPre-${data.compression.preset}.${data.format}`);
 
 	//exportList.push(data);
 	window.addCurrentExport(data);
@@ -1335,7 +1684,7 @@ window.renderCurrentExports = function() {
 
 	Object.keys(currentExports).forEach(function(key) {
 		const element = currentExports[key];
-		exportListHTML += `<div class="row" >
+		exportListHTML += `<div class="row exportListItem" >
 		<div class="c1 tcenter">
 		${element.videoBitrate}kBit/s
 		</div>
@@ -1359,15 +1708,17 @@ window.renderCurrentExports = function() {
 	document.getElementById('exportList').innerHTML = exportListHTML;
 };
 
+// Mark : Render History Exports
+
 window.renderHistoryExports = function() {
 	var exportHListHTML = ``;
 
 	Object.keys(exportHistory).forEach(function(key) {
 		const element = exportHistory[key];
-		console.log('Path test ', path.normalize(element.outputFile));
-		console.log('Path test ', element.outputFile.replace(/\\/g, '/'));
-		console.log('History Element = ', element);
-		exportHListHTML += `<div class="row" >
+		//console.log('Path test ', path.normalize(element.outputFile));
+		//console.log('Path test ', element.outputFile.replace(/\\/g, '/'));
+		//console.log('History Element = ', element);
+		exportHListHTML += `<div class="row exportListItem" >
 		<div class="c1 tcenter">
 		${element.videoBitrate}kBit/s
 		</div>
@@ -1419,24 +1770,47 @@ window.exportAllClips = async function() {
 	return;
 };
 
+window.clearExportHistory = async function() {
+	exportHistory = {};
+	window.renderHistoryExports();
+};
+
+// Mark : Fast Export
+
+window.fastExport = async function(id, event) {
+	event.stopPropagation();
+	console.log('Fast Export = ', id);
+	console.log('Using default Export Settings = ', settings.data.defaultExport);
+};
+
+window.removeRegionButton = async function(id, event) {
+	event.stopPropagation();
+	console.log('Remove Region = ', id);
+	wavesurfer.regions.list[id].remove();
+};
+
+// Mark: Start Converting File
+
 var exportList = [];
 window.startExport = async function() {
-	var index = 0;
-	exportHistory = {};
-	renderHistoryExports();
+	//exportHistory = {};
+	//renderHistoryExports();
 	for (var key in currentExports) {
 		if (currentExports.hasOwnProperty(key)) {
 			var element = currentExports[key];
 
-			document.getElementById('exportText').innerHTML = `${index + 1}/${Object.keys(currentExports).length} File ${element.outputFile}`;
+			document.getElementById('exportText').innerHTML = `${Object.keys(currentExports).length} files left to process`;
 			const result = await ipcRenderer.invoke('convertFile', element);
-
 			window.addCurrentExportToHistory(result.data.uuid);
 		}
-		index++;
 	}
 
-	document.getElementById('exportText').innerHTML = `Finished`;
+	if (Object.keys(currentExports).length > 0) {
+		window.startExport();
+	} else {
+		document.getElementById('exportText').innerHTML = `Finished`;
+	}
+
 	exportList = [];
 	return;
 };
@@ -1456,6 +1830,8 @@ var CurserToMove = {
 	id: 'Main',
 	type: ''
 };
+
+// mark : Handle Window Keys
 
 function handleWindowKeys(e) {
 	console.log(e.key);

@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="css/custom/dist/main.css" />
 
 
-    <link rel="stylesheet" href="hb-front/main/dist/main.css" />
+    <link rel="stylesheet" href="hb-front/main.css" />
 
 
 </head>
@@ -32,7 +32,7 @@
                 </button>
             </div>
             <div class="input c12 ">
-                <button type="button" class="ig-item dark" onclick="function(){document.getElementById('startLoadingScreen').classList.add('hide')}">
+                <button type="button" class="ig-item dark" onclick="window.updateWindow(false)">
                     Cancle
                 </button>
             </div>
@@ -55,18 +55,25 @@
                 </div>
 
                 -->
+                <div class="sideNavHead row ">
+                    <a class="c6 tcenter" onclick="window.showSideNavContainer('playlistContainer')">Playlist</a>
+                    <a class="c6 tcenter" onclick="window.showSideNavContainer('clipsContainer')">Clips</a>
+                </div>
 
-
-
-                <div class="playlist" id="playlist">
+                <div id="playlistContainer" class="sideNavBody">
+                    <div class="playlist" id="playlist">
+                    </div>
+                    <div class="import but" onclick="window.openFiles()">
+                        Import
+                    </div>
+                </div>
+                <div id="clipsContainer" class="sideNavBody hide">
+                    <div class="playlist" id="clips">
+                    </div>
 
                 </div>
-                <div class="import but" onclick="window.openFiles()">
-                    Import
-                </div>
+
             </div>
-
-
             <div id="video-container">
 
 
@@ -163,8 +170,6 @@
                     </div>
                 </div>
             </div>
-
-
             <div onclick="window.clickOverlay()" ondblclick="window.dbClickOverlay()" class="video-overlay">
                 <div id="loadingContainer" class="center loadingContainer hidden">
                     <div id="globalSpinner" class="spin"></div>
@@ -173,153 +178,149 @@
                 </div>
 
             </div>
-
-
             <!-- The Modal -->
             <div id="exportModal" class="modal ">
                 <div class="modal-content">
                     <div class="modal-head row">
-
                         Export
-
                         <button type="button" onclick="window.closeModal('exportModal')" class="fas fa-times"></button>
                     </div>
                     <div class="container">
+                        <div class="card">
+                            <div class="card-head">Export Path</div>
+                            <div class="row">
+                                <div class="ig c12">
+                                    <div class="input c6 ">
+                                        <label class="label-top">Export Folder</label>
+                                        <input type="text" id="videoexportdirpathInputField" onclick="window.changeExportPath()" class="ig-item dark" />
+                                    </div>
+                                    <div class="input c6 ">
+                                        <label class="label-top">Export Base Name</label>
+                                        <input type="text" id="videoexportnameInputField" class="ig-item dark" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
 
+                            <div class="card-head">Video Export Settings</div>
+                            <div class="row ">
+                                <div class="ig c12">
 
+                                    <div class="input c1">
+                                        <label class="label-top">Bitrate</label>
+                                        <input type="text" id="videoexport-bitrate" class="ig-item dark" />
+                                    </div>
+                                    <div class="input c1">
+                                        <label class="label-top"></label>
+                                        <input type="text" id="videoexport-compRate" value="23" class="ig-item dark" />
+                                    </div>
+                                    <div class="input c2">
+                                        <label class="label-top">Preset</label>
+                                        <div class="select ig-item dark">
 
+                                            <select id="videoexport-preset" value="medium" class="">
+                                                <option value="ultrafast">ultrafast</option>
+                                                <option value="superfast">superfast</option>
+                                                <option value="veryfast">veryfast</option>
+                                                <option value="faster">faster</option>
+                                                <option value="fast">fast</option>
+                                                <option value="medium">medium</option>
+                                                <option value="slow">slow</option>
+                                                <option value="slower">slower</option>
+                                                <option value="veryslow">veryslow but best output</option>
 
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="input c1">
+                                        <label class="label-top">Quality</label>
+                                        <input type="text" id="videoexport-quality" class="ig-item dark" value="100" />
+                                    </div>
+                                    <div class="input c1">
+                                        <label class="label-top">FPS</label>
+                                        <input type="text" id="videoexport-fps" class="ig-item dark" />
+                                    </div>
+                                    <div class="input c2">
+                                        <label class="label-top">Export Format</label>
+                                        <div class="select ig-item dark">
 
+                                            <select id="videoexport-format" class="">
+                                                <option value="mp4">mp4</option>
+                                                <option value="mov">mov</option>
+                                                <option value="avi">avi</option>
+                                                <option value="flv">flv</option>
+                                                <option value="mp3">mp3 Audio Only</option>
+                                                <option value="wav">wav Audio Only</option>
+                                                <option value="gif">gif</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="input c2">
+                                        <label class="label-top">Export Format</label>
+                                        <div class="select ig-item dark">
 
-                        <div class="row">
+                                            <select id="videoexport-videoCodec" value="libx264" class="">
+                                                <option value="libx264">libx265</option>
+                                                <option value="libx265">libx265 cant play this codec</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="input c2 ">
+                                        <button type="button" class="ig-item dark" onclick="window.exportVideo()">
+                                            Export
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-head">Clips</div>
+                            <div id="regions">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="exportListBackground">
                             <div class="ig c12">
-                                <div class="input c6 ">
-                                    <input type="text" id="videoexportdirpathInputField" onclick="window.changeExportPath()" class="ig-item dark" />
+                                <div class="input c2">
+                                    <div class="region ig-item dark">
+                                        <span class="">Export List</span>
+                                    </div>
                                 </div>
-                                <div class="input c6 ">
-                                    <input type="text" id="videoexportnameInputField" class="ig-item dark" />
+                                <div class="input c8">
+                                    <div class="region ig-item dark">
+                                        <span id="exportText"></span>
+                                        <div id="videoExport" class="progress exportProgress" value="0">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="input c2">
+                                    <button type="button" id="exportbtn" onclick="window.startExport()" class="ig-item dark">Start Export</button>
                                 </div>
                             </div>
+                            <div id="exportList"></div>
                         </div>
+                    </div>
 
-                        <div class="row ">
+                    <div class="container">
+                        <div class="exportListBackground">
                             <div class="ig c12">
-
+                                <div class="input c11">
+                                    <div class="region ig-item dark" id="${wavesurfer.regions.list[key].id}">
+                                        <span class="">Finnished Exports</span>
+                                    </div>
+                                </div>
                                 <div class="input c1">
-                                    <label class="label-top">Bitrate kBit/s</label>
-                                    <input type="text" id="videoexport-bitrate" class="ig-item dark" />
-                                </div>
-                                <div class="input c1">
-                                    <label class="label-top">Compremierung</label>
-                                    <input type="text" id="videoexport-compRate" class="ig-item dark" />
-                                </div>
-                                <div class="input c2">
-                                    <label class="label-top">Preset</label>
-                                    <div class="select ig-item dark">
-
-                                        <select id="videoexport-preset" value="medium" class="">
-                                            <option value="ultrafast">ultrafast</option>
-                                            <option value="superfast">superfast</option>
-                                            <option value="veryfast">veryfast</option>
-                                            <option value="faster">faster</option>
-                                            <option value="fast">fast</option>
-                                            <option value="medium">medium</option>
-                                            <option value="slow">slow</option>
-                                            <option value="slower">slower</option>
-                                            <option value="veryslow">veryslow but best output</option>
-
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="input c2">
-                                    <label class="label-top">Quality</label>
-                                    <input type="text" id="videoexport-quality" class="ig-item dark" value="100" />
-                                </div>
-                                <div class="input c2">
-                                    <label class="label-top">Frams per Secound</label>
-                                    <input type="text" id="videoexport-fps" class="ig-item dark" />
-                                </div>
-                                <div class="input c2">
-                                    <label class="label-top">Export Format</label>
-                                    <div class="select ig-item dark">
-
-                                        <select id="videoexport-format" class="">
-                                            <option value="mp4">mp4</option>
-                                            <option value="mov">mov</option>
-                                            <option value="avi">avi</option>
-                                            <option value="flv">flv</option>
-                                            <option value="mp3">mp3 Audio Only</option>
-                                            <option value="wav">wav Audio Only</option>
-                                            <option value="gif">gif</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="input c2">
-                                    <label class="label-top">Export Format</label>
-                                    <div class="select ig-item dark">
-
-                                        <select id="videoexport-videoCodec" class="">
-                                            <option value="libx264">libx265</option>
-                                            <option value="libx265">libx265</option>
-                                            <option value="mov">mov</option>
-                                            <option value="avi">avi</option>
-                                            <option value="flv">flv</option>
-                                            <option value="mp3">mp3 Audio Only</option>
-                                            <option value="wav">wav Audio Only</option>
-                                            <option value="gif">gif</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="input c2 ">
-                                    <button type="button" class="ig-item dark" onclick="window.exportVideo()">
-                                        Add to Export List
-                                    </button>
+                                    <button type="button" id="" onclick="window.clearExportHistory()" class="ig-item dark">Clear</button>
                                 </div>
                             </div>
-
-
-
-
+                            <div id="exportHList"></div>
                         </div>
-
-
-
-                        <div id="regions">
-
-                        </div>
-
-                        <div></div>
-                        <div id="currentExportProcesses">
-
-                        </div>
-
-                    </div>
-                    <div class="modal-footer">
-
-                        <div class="crow lock-end">
-                            <div class="c7">
-                                <p id="exportText"></p>
-                            </div>
-
-
-                            <div class="input c5 ">
-                                <button type="button" id="exportbtn" onclick="window.startExport()" class="ig-item dark">Start Export</button>
-                            </div>
-
-
-                        </div>
-
-
-
                     </div>
 
-                    <div id="videoExport" class="progress " value="0">
 
-                    </div>
-                    Export List
-                    <div id="exportList"></div>
-                    Finnished Exports
-                    <div id="exportHList"></div>
                 </div>
             </div>
             <div id="settingsModal" class="modal ">
@@ -376,7 +377,7 @@
 
 
 <script type="text/javascript" src="js/main.js"></script>
-<script type="text/javascript" src="hb-front/main/dist/main.dev.js"></script>
+<script type="text/javascript" src="hb-front/main.dev.js"></script>
 <script type="text/javascript" src="js/modal.js"></script>
 
 

@@ -1,0 +1,79 @@
+<div class="row ">
+    <div class="ig c12">
+
+        <div class="input c1">
+            <label class="label-top">Bitrate kBit/s</label>
+            <input type="text" id="videoexport-bitrate" class="ig-item dark" />
+        </div>
+        <div class="input c1">
+            <label class="label-top">Compremierung</label>
+            <input type="text" id="videoexport-compRate" class="ig-item dark" />
+        </div>
+        <div class="input c2">
+            <label class="label-top">Preset</label>
+            <div class="select ig-item dark">
+
+                <select id="videoexport-preset" value="medium" class="">
+                    <option value="ultrafast">ultrafast</option>
+                    <option value="superfast">superfast</option>
+                    <option value="veryfast">veryfast</option>
+                    <option value="faster">faster</option>
+                    <option value="fast">fast</option>
+                    <option value="medium">medium</option>
+                    <option value="slow">slow</option>
+                    <option value="slower">slower</option>
+                    <option value="veryslow">veryslow but best output</option>
+
+                </select>
+            </div>
+        </div>
+        <div class="input c2">
+            <label class="label-top">Quality</label>
+            <input type="text" id="videoexport-quality" class="ig-item dark" value="100" />
+        </div>
+        <div class="input c2">
+            <label class="label-top">Frams per Secound</label>
+            <input type="text" id="videoexport-fps" class="ig-item dark" />
+        </div>
+        <div class="input c2">
+            <label class="label-top">Export Format</label>
+            <div class="select ig-item dark">
+
+                <select id="videoexport-format" class="">
+                    <option value="mp4">mp4</option>
+                    <option value="mov">mov</option>
+                    <option value="avi">avi</option>
+                    <option value="flv">flv</option>
+                    <option value="mp3">mp3 Audio Only</option>
+                    <option value="wav">wav Audio Only</option>
+                    <option value="gif">gif</option>
+                </select>
+            </div>
+        </div>
+        <div class="input c2">
+            <label class="label-top">Export Format</label>
+            <div class="select ig-item dark">
+
+                <select id="videoexport-videoCodec" class="">
+                    <option value="libx264">libx265</option>
+                    <option value="libx265">libx265</option>
+                    <option value="mov">mov</option>
+                    <option value="avi">avi</option>
+                    <option value="flv">flv</option>
+                    <option value="mp3">mp3 Audio Only</option>
+                    <option value="wav">wav Audio Only</option>
+                    <option value="gif">gif</option>
+                </select>
+            </div>
+        </div>
+        <div class="input c2 ">
+            <button type="button" class="ig-item dark" onclick="window.exportVideo()">
+                Add to Export List
+            </button>
+        </div>
+    </div>
+
+
+
+
+</div>

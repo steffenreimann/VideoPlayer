@@ -1,0 +1,707 @@
+:root {
+  --text-color-primary: #fff;
+  --text-color-secondary: #333;
+  --bg-color-primary: #333;
+  --bg-color-secondary: #fff;
+  --row-col-padding-top: 0px;
+  --row-col-padding-right: 0px;
+  --row-col-padding-bottom: 0px;
+  --row-col-padding-left: 0px;
+  --row-padding-top: 15px;
+  --row-padding-right: 0px;
+  --row-padding-bottom: 15px;
+  --row-padding-left: 0px;
+  --container-padding-top: 10px;
+  --container-padding-right: 10px;
+  --container-padding-bottom: 10px;
+  --container-padding-left: 10px;
+  --container-fluent-padding-top: 0px;
+  --container-fluent-padding-right: 0px;
+  --container-fluent-padding-bottom: 0px;
+  --container-fluent-padding-left: 0px;
+  --border-radius: 8px;
+  --border-width: 2px;
+  --border-style: solid;
+  --border-color: rgb(121, 121, 121);
+  --border-color-hover: rgb(128, 106, 252);
+  --border-color-focus: #333;
+  --modal-bg-color-dark: rgba(0, 0, 0, 0.5);
+  --modal-bg-color-light: rgba(255, 255, 255, 0.5); }
+
+.container {
+  padding-left: var(--container-padding-left);
+  padding-right: var(--container-padding-right);
+  padding-top: var(--container-padding-top);
+  padding-bottom: var(--container-padding-bottom); }
+
+.container-fluent {
+  padding-right: var(--container-fluent-padding-right);
+  padding-left: var(--container-fluent-padding-left);
+  padding-top: var(--container-fluent-padding-top);
+  padding-bottom: var(--container-fluent-padding-bottom); }
+
+.row {
+  position: relative;
+  display: flex;
+  left: 0px;
+  right: 0px;
+  margin-top: var(--row-padding-top);
+  margin-bottom: var(--row-padding-bottom);
+  margin-left: var(--row-padding-left);
+  margin-right: var(--row-padding-right); }
+
+.cItem {
+  width: 100%;
+  padding-top: 7.5px;
+  display: inline-block;
+  font-size: 18px;
+  transition: all 0.5s ease-in-out;
+  color: black !important; }
+
+.c1-2 {
+  align-items: center;
+  width: 4.175%;
+  padding-left: var(--row-col-padding-left);
+  padding-right: var(--row-col-padding-right);
+  padding-top: var(--row-col-padding-top);
+  padding-bottom: var(--row-col-padding-bottom); }
+
+.c1 {
+  align-items: center;
+  width: 8.33%;
+  padding-left: var(--row-col-padding-left);
+  padding-right: var(--row-col-padding-right);
+  padding-top: var(--row-col-padding-top);
+  padding-bottom: var(--row-col-padding-bottom); }
+
+.c2 {
+  position: relative;
+  align-items: center;
+  width: 16.66%;
+  padding-left: var(--row-col-padding-left);
+  padding-right: var(--row-col-padding-right);
+  padding-top: var(--row-col-padding-top);
+  padding-bottom: var(--row-col-padding-bottom); }
+
+.c3 {
+  align-items: center;
+  width: 25%;
+  padding-left: var(--row-col-padding-left);
+  padding-right: var(--row-col-padding-right);
+  padding-top: var(--row-col-padding-top);
+  padding-bottom: var(--row-col-padding-bottom); }
+
+.c4 {
+  position: relative;
+  align-items: center;
+  width: 33.33%;
+  padding-left: var(--row-col-padding-left);
+  padding-right: var(--row-col-padding-right);
+  padding-top: var(--row-col-padding-top);
+  padding-bottom: var(--row-col-padding-bottom); }
+
+.c5 {
+  align-items: center;
+  width: 41.66%;
+  padding-left: var(--row-col-padding-left);
+  padding-right: var(--row-col-padding-right);
+  padding-top: var(--row-col-padding-top);
+  padding-bottom: var(--row-col-padding-bottom); }
+
+.c6 {
+  align-items: center;
+  width: 50%;
+  padding-left: var(--row-col-padding-left);
+  padding-right: var(--row-col-padding-right);
+  padding-top: var(--row-col-padding-top);
+  padding-bottom: var(--row-col-padding-bottom); }
+
+.c7 {
+  align-items: center;
+  width: 58.33%;
+  padding-left: var(--row-col-padding-left);
+  padding-right: var(--row-col-padding-right);
+  padding-top: var(--row-col-padding-top);
+  padding-bottom: var(--row-col-padding-bottom); }
+
+.c8 {
+  align-items: center;
+  width: 66.66%;
+  padding-left: var(--row-col-padding-left);
+  padding-right: var(--row-col-padding-right);
+  padding-top: var(--row-col-padding-top);
+  padding-bottom: var(--row-col-padding-bottom); }
+
+.c9 {
+  align-items: center;
+  width: 75%;
+  padding-left: var(--row-col-padding-left);
+  padding-right: var(--row-col-padding-right);
+  padding-top: var(--row-col-padding-top);
+  padding-bottom: var(--row-col-padding-bottom); }
+
+.c10 {
+  align-items: center;
+  width: 83.33%;
+  padding-left: var(--row-col-padding-left);
+  padding-right: var(--row-col-padding-right);
+  padding-top: var(--row-col-padding-top);
+  padding-bottom: var(--row-col-padding-bottom); }
+
+.c11 {
+  align-items: center;
+  width: 91.66%;
+  padding-left: var(--row-col-padding-left);
+  padding-right: var(--row-col-padding-right);
+  padding-top: var(--row-col-padding-top);
+  padding-bottom: var(--row-col-padding-bottom); }
+
+.c12 {
+  align-items: center;
+  width: 100%;
+  padding-left: var(--row-col-padding-left);
+  padding-right: var(--row-col-padding-right);
+  padding-top: var(--row-col-padding-top);
+  padding-bottom: var(--row-col-padding-bottom); }
+
+@media screen and (max-width: 800px) {
+  .crow {
+    display: block;
+    left: 0px;
+    right: 0px; }
+  .c1 {
+    width: 100% !important;
+    float: left; }
+  .c2 {
+    width: 100% !important;
+    float: left; }
+  .c3 {
+    width: 100% !important;
+    float: left; }
+  .c4 {
+    width: 100% !important;
+    float: left; }
+  .c5 {
+    width: 100% !important;
+    float: left; }
+  .c6 {
+    width: 100% !important;
+    float: left; }
+  .c7 {
+    width: 100% !important;
+    float: left; }
+  .c8 {
+    width: 100% !important;
+    float: left; }
+  .c9 {
+    width: 100% !important;
+    float: left; }
+  .c10 {
+    width: 100% !important;
+    float: left; }
+  .c11 {
+    width: 100% !important;
+    float: left; }
+  .c12 {
+    width: 100% !important;
+    float: left; } }
+
+.ig .c1 {
+  padding: 0px; }
+
+.ig .c2 {
+  padding: 0px; }
+
+.ig .c3 {
+  padding: 0px; }
+
+.ig .c4 {
+  padding: 0px; }
+
+.ig .c5 {
+  padding: 0px; }
+
+.ig .c6 {
+  padding: 0px; }
+
+.ig .c7 {
+  padding: 0px; }
+
+.ig .c8 {
+  padding: 0px; }
+
+.ig .c9 {
+  padding: 0px; }
+
+.ig .c10 {
+  padding: 0px; }
+
+.ig .c11 {
+  padding: 0px; }
+
+.ig .c12 {
+  padding: 0px; }
+
+.center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%); }
+
+.center-v {
+  position: absolute;
+  top: 50%;
+  margin-bottom: -50%;
+  transform: translateY(-50%); }
+
+.center-h {
+  position: absolute;
+  left: 50%;
+  margin-right: -50%;
+  transform: translateX(-50%); }
+
+.pointer {
+  cursor: pointer; }
+
+.tcenter {
+  text-align: center !important; }
+
+.tright {
+  text-align: right !important; }
+
+.tleft {
+  text-align: left !important; }
+
+.dark {
+  background-color: #111 !important;
+  color: #fff !important; }
+
+.tlight {
+  color: #fff !important; }
+
+.tdark {
+  color: #111 !important; }
+
+.transparent {
+  background-color: transparent !important; }
+
+.lockLeft {
+  position: absolute;
+  left: 0px; }
+
+.lockRight {
+  position: absolute;
+  right: 0px; }
+
+.border, .ig .input button, .ig-item, input[type=text],
+input[type=button],
+input[type=submit],
+input[type=reset], button, .select {
+  border-radius: var(--border-radius);
+  border-style: var(--border-style);
+  border-width: var(--border-width);
+  border-color: var(--border-color); }
+
+.border:hover, .ig .input button:hover, .ig-item:hover, input:hover[type=text],
+input:hover[type=button],
+input:hover[type=submit],
+input:hover[type=reset], button:hover, .select:hover {
+  border-color: var(--border-color-hover); }
+
+.lock-start {
+  display: flex;
+  justify-content: flex-start; }
+
+.lock-end {
+  display: flex;
+  justify-content: flex-end; }
+
+.ig {
+  display: -webkit-inline-box;
+  width: 100%;
+  background-color: transparent; }
+
+.ig .input {
+  margin: 0px; }
+
+.ig .input button {
+  background-color: white; }
+
+.form-ctrl, .ig-item {
+  width: 100%;
+  height: 40px;
+  display: inline-block;
+  vertical-align: center;
+  padding: 7.5px; }
+
+.ig-item {
+  box-sizing: border-box;
+  outline: none;
+  font-size: 18px;
+  transition: all 0.5s ease-in-out;
+  color: #ccc !important;
+  cursor: default; }
+
+.ig button span {
+  left: 0px; }
+
+.input {
+  position: relative; }
+
+.input .label-top {
+  font-size: small;
+  position: absolute;
+  top: -16px;
+  width: 100%;
+  left: 0px; }
+
+.input .label-bot {
+  font-size: small;
+  position: absolute;
+  top: 40px;
+  left: 0px;
+  width: 100%; }
+
+.input .ifas {
+  position: absolute;
+  right: 0px;
+  left: 0px;
+  top: 0px;
+  margin: 11px;
+  pointer-events: none;
+  text-align: right; }
+
+input[type="text"]:focus {
+  border: 2px solid #2ea1ff;
+  transition: all 0.5s ease-in-out; }
+
+input[type="text"] {
+  cursor: text !important; }
+
+input {
+  width: 100%; }
+
+input[type=text],
+input[type=button],
+input[type=submit],
+input[type=reset] {
+  width: 100%;
+  padding: 7.5px 5px;
+  margin: 0px 0;
+  display: inline-block;
+  box-sizing: border-box;
+  outline: none;
+  font-size: 18px;
+  transition: all 0.5s ease-in-out;
+  color: #ccc !important; }
+
+input[type=range] {
+  -webkit-appearance: none;
+  /* Hides the slider so that custom slider can be made */
+  width: 100%;
+  /* Specific width is required for Firefox. */
+  background: transparent;
+  /* Otherwise white in Chrome */ }
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; }
+
+input[type=range]:focus {
+  outline: none;
+  /* Removes the blue border. You should probably do some kind of focus styling for accessibility reasons though. */ }
+
+input[type=range]::-ms-track {
+  width: 100%;
+  cursor: pointer;
+  /* Hides the slider so custom styles can be added */
+  background: transparent;
+  border-color: transparent;
+  color: transparent; }
+
+/* Special styling for WebKit/Blink */
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  border: 1px solid var(--text-color);
+  height: 20px;
+  width: 20px;
+  border-radius: 10px;
+  background: var(--text-color);
+  cursor: pointer;
+  margin-top: -7px;
+  /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
+  /* Add cool effects to your sliders! */
+  transition: 0.3s ease-in-out; }
+
+input[type=range]::-webkit-slider-thumb:hover {
+  -webkit-appearance: none;
+  border: 1px solid #b8b8b8;
+  background: #b8b8b8;
+  transition: 0.3s ease-in-out;
+  background-color: #b8b8b8; }
+
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 7px;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+  background: var(--text-color);
+  border-radius: 3px; }
+
+input[type=range]::-webkit-slider-runnable-track:hover {
+  -webkit-appearance: none;
+  background: #b8b8b8;
+  transition: 0.3s ease-in-out;
+  background-color: #b8b8b8; }
+
+input[type=range]::-webkit-slider-runnable-track:hover ~ input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  background: #b8b8b8;
+  transition: 0.3s ease-in-out;
+  background-color: #b8b8b8; }
+
+button {
+  width: 100%;
+  padding: 7.5px 5px;
+  margin: 0px 0;
+  display: inline-block;
+  box-sizing: border-box;
+  outline: none;
+  transition: all 0.5s ease-in-out;
+  font-size: 18px;
+  cursor: pointer !important;
+  -webkit-app-region: no-drag; }
+
+button span {
+  position: absolute;
+  /* To make it round */
+  background-color: rgba(0, 0, 0, 0.3);
+  width: 100%;
+  height: 2px;
+  left: 8px;
+  animation: ripple 0.5s;
+  opacity: 0; }
+
+select {
+  width: 100%;
+  background-color: DodgerBlue;
+  padding: 7.5px 5px;
+  margin: 0px 0;
+  display: none; }
+
+.select {
+  position: absolute;
+  z-index: 10;
+  width: 100%;
+  transition: all 0.3s ease-in-out;
+  background-color: DodgerBlue;
+  height: auto;
+  display: block;
+  vertical-align: center;
+  padding: 0px; }
+
+.select .selectedValue {
+  width: 100%;
+  height: 36px;
+  padding: 7.5px;
+  margin: 0px 0;
+  display: inline-block;
+  box-sizing: border-box;
+  outline: none;
+  transition: all 0.5s ease-in-out;
+  font-size: 18px; }
+
+.select .optionWrapper {
+  width: 100%;
+  padding: 5px 5px;
+  margin: 0px 0;
+  display: inline-block;
+  box-sizing: border-box;
+  border-radius: 4px;
+  outline: none;
+  transition: all 0.1s ease-in-out;
+  font-size: 18px; }
+
+.select .optionWrapper:hover {
+  background-color: #494949;
+  transition: all 0.1s ease-in-out;
+  border-radius: 4px !important;
+  border: 0px; }
+
+.select .optionsListWrapper {
+  max-height: 120px;
+  height: 0px;
+  transition: all 0.3s ease-in-out;
+  overflow-y: auto;
+  margin-left: 4px;
+  margin-right: 4px; }
+
+.select .optionsListWrapper.show {
+  transition: all 0.3s ease-in-out;
+  height: 120px; }
+
+.select .bar {
+  position: absolute;
+  left: 0px;
+  top: 36px;
+  width: 100%;
+  height: 2px;
+  background-color: #ccc;
+  opacity: 0;
+  transition: all 0.3s ease-in-out; }
+
+.select .bar.show {
+  opacity: 1;
+  transition: all 0.3s ease-in-out; }
+
+.progress {
+  width: 100%;
+  background-color: #2ea1ff;
+  height: 5px;
+  border-radius: 4px; }
+
+.progress-bar {
+  background-color: blue;
+  height: 100%;
+  border-radius: 4px;
+  transition: all 1s linear; }
+
+progress {
+  display: none; }
+
+.emojiContainer {
+  display: inline-block;
+  cursor: pointer; }
+
+.emojiContainer:hover {
+  background-color: #444444; }
+
+.emojiSelectContainer {
+  background-color: #616161;
+  width: 300px;
+  height: 300px;
+  overflow-x: hidden;
+  overflow-y: auto; }
+
+/* Add animation */
+@keyframes ripple {
+  0% {
+    opacity: 0;
+    width: 0%;
+    left: 50%; }
+  50% {
+    opacity: 1; }
+  90% {
+    opacity: 0.1; }
+  100% {
+    opacity: 0;
+    width: 100%;
+    left: 0%; } }
+
+@keyframes openSelectOptions {
+  0% {
+    opacity: 0;
+    height: 0px; }
+  100% {
+    opacity: 1;
+    height: 100px; } }
+
+/* The Modal (background) */
+.modal {
+  display: none;
+  /* Hidden by default */
+  position: fixed;
+  /* Stay in place */
+  z-index: 999;
+  /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%;
+  /* Full width */
+  height: 100%;
+  /* Full height */
+  overflow: auto;
+  /* Enable scroll if needed */
+  background-color: black;
+  /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4);
+  /* Black w/ opacity */ }
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: var(--modal-bg-color-dark);
+  color: var(--text-color-primary);
+  margin: 5% auto;
+  /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid var(--modal-bg-color-dark);
+  border-radius: 16px;
+  width: 90%;
+  /* Could be more or less, depending on screen size */ }
+
+.modal-head button {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  right: 10px;
+  background-color: transparent;
+  border: none;
+  color: aliceblue;
+  padding: 0px; }
+
+.modal-head {
+  position: relative;
+  margin-bottom: 10px; }
+
+/* The Close Button */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold; }
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer; }
+
+.emojicontainer {
+  width: 200px;
+  height: 200px;
+  display: inline-block;
+  overflow-x: hidden;
+  overflow-y: auto; }
+
+.emojiWrapper {
+  width: 20px;
+  height: 20px;
+  display: inline-block; }
+
+body {
+  margin: 0px;
+  padding: 0px;
+  font-family: 'Open Sans', sans-serif; }
+
+/* width */
+::-webkit-scrollbar {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  z-index: -1;
+  width: 0px; }
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f100; }
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  width: 0px;
+  background: #888; }
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; }

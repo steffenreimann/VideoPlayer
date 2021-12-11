@@ -225,6 +225,7 @@ span[aria-label]:after {
 	font-size: 12px;
 	font-weight: normal;
 	color: white;
+	z-index: 99999;
 }
 
 span[aria-label]:hover:after {
@@ -340,8 +341,117 @@ span[aria-label]:hover:after {
 }
 
 .hide {
-	display: none;
+	display: none !important;
 	//animation: fadeOut 3s;
-	transition: all 3s ease-in-out;
-	opacity: 0;
+	//transition: all 3s ease-in-out;
+	opacity: 0 !important;
+}
+
+.exportListBackground {
+	background-color: slategray;
+	border-radius: 10px;
+}
+
+.exportListItem {
+	top: -10;
+	padding-left: 10px;
+}
+
+.exportProgress {
+	width: auto !important;
+	height: 36px !important;
+	top: 2px !important;
+	left: 2px !important;
+	right: 2px !important;
+	position: absolute;
+}
+
+.progress {
+	border-radius: 0px !important;
+	background-color: #1110 !important;
+}
+
+.progress-bar {
+	border-radius: 0px !important;
+	background-color: #4848488a !important;
+}
+
+.ItemBackground {
+	background-color: slategray;
+	border-radius: 10px;
+	position: relative;
+	top: 55px;
+	height: 60px;
+}
+
+.card {
+	background-color: #484848;
+	border-radius: 10px;
+	position: relative;
+}
+
+.card-head {
+	padding: 7.5;
+	font-size: 18px;
+	color: #ccc !important;
+}
+
+.region-head {
+	position: absolute;
+	top: 0px;
+	left: 2px;
+	right: 2px;
+	//width: 100%;
+	height: 17px;
+	background-color: #2c2c2c;
+	overflow: hidden;
+	text-overflow: clip;
+	cursor: pointer;
+}
+
+.headItem-fastExport {
+	position: absolute;
+	top: 0px;
+	left: 2px;
+}
+.headItem-removeRegion {
+	position: absolute;
+	top: 0px;
+	right: 2px;
+}
+
+.headItem-text {
+	position: absolute;
+	left: 20px;
+	top: 0px;
+	right: 20px;
+	text-align: center;
+}
+
+.wavesurfer-region:hover {
+	background-color: rgba(0, 0, 0, 0.3) !important;
+}
+
+.sideNavBody {
+	overflow: scroll;
+	position: absolute;
+	height: 100%;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	z-index: 1;
+}
+
+.sideNavHead {
+	padding-top: 10px;
+	margin-top: 0px !important;
+	margin-bottom: 0px !important;
+	overflow: scroll;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	height: 25px;
+	cursor: pointer;
+	z-index: 2;
 }
